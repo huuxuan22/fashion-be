@@ -1,0 +1,34 @@
+package com.example.projectc1023i1.service;
+
+import com.example.projectc1023i1.Exception.DataNotFoundException;
+import com.example.projectc1023i1.model.Image;
+import com.example.projectc1023i1.repository.impl.IImageRepo;
+import com.example.projectc1023i1.repository.impl.IProductRepo;
+import com.example.projectc1023i1.service.impl.IImageService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+@Service
+public class ImageService implements IImageService {
+    @Autowired
+    private IImageRepo imageRepo;
+    @Autowired
+    private IProductRepo productRepo;
+    @Override
+    public List<Image> getAllImagesById(Integer id) {
+        return List.of();
+    }
+
+    @Override
+    public Image getImageById(Integer id) {
+        return null;
+    }
+
+    @Override
+    public List<String> findByProductId(Integer productId) {
+        productRepo.findById(productId).orElseThrow(() -> new DataNotFoundException("Product not found"));
+        return imageRepo.findByProductId(productId);
+    }
+}
