@@ -1,6 +1,7 @@
 package com.example.projectc1023i1.service;
 
 import com.example.projectc1023i1.Dto.ProductMorphology;
+import com.example.projectc1023i1.Dto.ProductVariantDTO;
 import com.example.projectc1023i1.Exception.DataNotFoundException;
 import com.example.projectc1023i1.model.*;
 import com.example.projectc1023i1.repository.impl.IColorRepo;
@@ -94,6 +95,25 @@ public class ProductVariantService implements IProductVariantService {
 
     @Override
     public void deleteProductVariant(Integer id) {
+        productVariantRepo.findById(id).orElseThrow(() -> new DataNotFoundException("Không tìm thấy chi tiết sản phẩm"));
         productVariantRepo.deleteById(id);
+    }
+
+    @Override
+    public ProductVariant UpdateProductVariant(ProductVariantDTO productVariantDTO) {
+        ProductVariant productVariantExist = new ProductVariant();
+        Categories categories = productRepo.findById(productVariantDTO.getProductId()).get().getCategories();
+        productVariantExist.setColor(colorRepo.findById(productVariantDTO.getColorId()).get());
+        productVariantExist.setSize(sizeRepo.findById(productVariantDTO.getSizeId()).get());
+        productVariantExist.setProduct(productRepo.findById(productVariantDTO.getProductId()).get());
+        productVariantExist.setProductVariantId(productVariantDTO.getProductVariantId());
+        productVariantExist.setPrice(productVariantDTO.getPrice());
+        productVariantExist.setStock(productVariantDTO.getStock());
+        productVariantExist.setSku(productUtils.getSkuFromProductDTO(
+                categories.getCategorieId(),
+                productVariantDTO.getColorId(),
+                productVariantDTO.getSizeId()
+        ));
+        return productVariantRepo.save(productVariantExist);
     }
 }

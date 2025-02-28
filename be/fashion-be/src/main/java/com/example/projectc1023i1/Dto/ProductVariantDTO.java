@@ -2,6 +2,7 @@ package com.example.projectc1023i1.Dto;
 
 import com.example.projectc1023i1.Validation.product.NotExistColor;
 import com.example.projectc1023i1.Validation.product.NotExistProduct;
+import com.example.projectc1023i1.Validation.product.NotExistProductVariant;
 import com.example.projectc1023i1.Validation.product.NotExistSize;
 import com.example.projectc1023i1.model.Color;
 import com.example.projectc1023i1.model.Product;
@@ -19,6 +20,7 @@ import org.springframework.validation.Validator;
 @NoArgsConstructor
 @Builder
 public class ProductVariantDTO implements Validator {
+    @NotExistProductVariant
     @NotNull(message = "Bạn chưa chọn sản phẩm")
     private Integer productVariantId;
     @NotNull(message = "Bạn chưa chọn giá cho sản phẩm")
@@ -28,13 +30,13 @@ public class ProductVariantDTO implements Validator {
     private Integer stock;
     @NotExistProduct
     @NotNull(message = "Bạn chưa chọn sản phẩm")
-    private Integer product;
-    @NotExistSize
+    private Integer productId;
     @NotNull(message = "Bạn chưa chọn màu sắc")
-    private Integer color;
     @NotExistColor
+    private Integer colorId;
+    @NotExistSize
     @NotNull(message = "Bạn chưa chọn kích thước")
-    private Integer size;
+    private Integer sizeId;
     @Override
     public boolean supports(Class<?> clazz) {
         return false;

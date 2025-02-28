@@ -7,6 +7,7 @@ import com.example.projectc1023i1.Dto.ProductUpateDTO;
 import com.example.projectc1023i1.model.Image;
 import com.example.projectc1023i1.model.Product;
 import com.example.projectc1023i1.model.Users;
+import com.example.projectc1023i1.request.ImageDelete;
 import com.example.projectc1023i1.respone.errorsValidate.ImageErrorsRespone;
 import com.example.projectc1023i1.respone.errorsValidate.ProductErrorsRespone;
 import com.example.projectc1023i1.respone.errorsValidate.ProductMorphologyErrors;
@@ -56,6 +57,13 @@ public class ProductController {
     @Autowired
     private IProductVariantService productVariantService;
 
+    /**
+     * Lấy tất cả sản phẩm
+     * @param user
+     * @param size
+     * @param page
+     * @return
+     */
     @GetMapping("get-all-product")
     public ResponseEntity<?> getAllProduct(@AuthenticationPrincipal Users user
                                             , @RequestParam("size") int size
@@ -72,6 +80,13 @@ public class ProductController {
         return ResponseEntity.ok(page1);
     }
 
+    /**
+     * Thêm mới 1 sản phẩm
+     * @param user
+     * @param productDTO
+     * @param bindingResult
+     * @return
+     */
     @PostMapping(value = "add-product")
 //    http://localhost:8080/admin/product/add-product
     public ResponseEntity<?> addProduct( @AuthenticationPrincipal Users user,
@@ -105,6 +120,14 @@ public class ProductController {
         return ResponseEntity.ok("Add product successfully");
     }
 
+    /**
+     * lưu aảnh vào máy và lưu đường dẫn vào trong database
+     * @param users
+     * @param imageDTO
+     * @param bindingResult
+     * @return
+     * @throws IOException
+     */
 //    http://localhost:8080/admin/product/upload-image  POST
     @PostMapping( value = "upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImage(
@@ -149,6 +172,11 @@ public class ProductController {
         return null;
     }
 
+    /**
+     * HIển thị hình ảnh
+     * @param imageName
+     * @return
+     */
     @GetMapping("/images/{imageName}")
     public ResponseEntity<?> getImage(@PathVariable String imageName) {
         try {
@@ -166,6 +194,13 @@ public class ProductController {
         }
     }
 
+    /**
+     * Lấy tất cả hiình ảnh ra hiển thị
+     * @param users
+     * @param productId
+     * @param request
+     * @return
+     */
     @GetMapping("get-all-image")
     public ResponseEntity<?> getAllImage(@AuthenticationPrincipal Users users,
                                          @RequestParam Integer productId,
@@ -180,7 +215,14 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(imageUrl);
     }
 
-
+    /**
+     *Thêm mới danh sách productVariant thêm theo kiểu dạng như
+     * 1 product 1 size và nhiều màu
+     * @param users
+     * @param productMorphologies
+     * @param bindingResult
+     * @return
+     */
     @PostMapping("add-product-variant")
     public ResponseEntity<?> addProductVariant(@AuthenticationPrincipal Users users,
                                                @RequestBody @Valid List<ProductMorphology> productMorphologies,
@@ -276,8 +318,27 @@ public class ProductController {
     }
 
 
+    @DeleteMapping("delete-product/{value}")
+    public ResponseEntity<?> deleteProduct(@AuthenticationPrincipal Users users,
+                                            @PathVariable("value") Integer value) {
+        productService.deleteProduct(value);
+        return ResponseEntity.ok().build();
+    }
 
+    @DeleteMapping("delete-image")
+    public ResponseEntity<?> deleteImage(@AuthenticationPrincipal Users users,
+                                         @RequestBody ImageDelete imageDelete) {
 
+        imageService.deleteImage(imageDelete.getProductId(), imageDelete.getImageUrls());
+        return ResponseEntity.ok().build();
+    }
 
+    @PostMapping("set-main-Image")
+    public ResponseEntity<?> setMainImage(@AuthenticationPrincipal Users users,
+                                          @RequestParam Integer productId,
+                                          @RequestParam String imageUrl) {
+        productService.setMainImage(productId, imageUrl);
+        return  ResponseEntity.ok().build();
+    }
 
 }

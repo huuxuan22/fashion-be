@@ -88,7 +88,10 @@ public class ProductService implements IProductService {
 
     @Override
     public void deleteProduct(Integer id) {
-        productRepo.deleteById(id);
+        if (!productRepo.findById(id).isPresent()) {
+            throw new DataNotFoundException("Không tìm thấy sản phẩm");
+        }
+        productRepo.deleteProduct(id);
     }
 
     @Override
@@ -113,5 +116,15 @@ public class ProductService implements IProductService {
     @Override
     public void chooseMainPhoto(String url, Integer productId) {
             
+    }
+
+    @Override
+    public void setMainImage(Integer productId, String url) {
+        if (!productRepo.findById(productId).isPresent()) {
+            throw new DataNotFoundException("Sản phẩm này không tồn tại");
+        }
+        if (url != null) {
+            productRepo.setMainImage(url,productId);
+        }
     }
 }

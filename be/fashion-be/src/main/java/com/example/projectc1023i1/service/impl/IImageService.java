@@ -8,5 +8,5 @@ public interface IImageService {
     List<Image> getAllImagesById(Integer id);
     Image getImageById(Integer id);
     List<String> findByProductId(Integer productId);
-
+    void deleteImage(Integer productId,List<Integer> imageId);
 }

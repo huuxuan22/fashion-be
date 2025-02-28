@@ -21,5 +21,5 @@ public interface IProductService {
     Product convertProductDtoToProduct(ProductDTO productDTO);
     void uploadImage(Integer productId, String url);
     void chooseMainPhoto(String url, Integer productId);
-
+    void setMainImage(Integer productId,String url);
 }

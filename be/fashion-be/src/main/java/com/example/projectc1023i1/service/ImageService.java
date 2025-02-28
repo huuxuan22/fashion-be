@@ -31,4 +31,16 @@ public class ImageService implements IImageService {
         productRepo.findById(productId).orElseThrow(() -> new DataNotFoundException("Product not found"));
         return imageRepo.findByProductId(productId);
     }
+
+    @Override
+    public void deleteImage(Integer productId, List<Integer> imageId) {
+        if (imageRepo.existsById(productId)) {
+            throw new DataNotFoundException("Product not found");
+        }
+        List<Image> images = imageRepo.findAllById(imageId);
+        if (images.size() != imageId.size()) {
+            throw new DataNotFoundException("Không có ảnh tồn tại");
+        }
+        imageRepo.deleteAll(images);
+    }
 }

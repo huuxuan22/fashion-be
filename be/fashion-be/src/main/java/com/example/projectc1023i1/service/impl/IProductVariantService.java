@@ -1,6 +1,7 @@
 package com.example.projectc1023i1.service.impl;
 
 import com.example.projectc1023i1.Dto.ProductMorphology;
+import com.example.projectc1023i1.Dto.ProductVariantDTO;
 import com.example.projectc1023i1.model.Color;
 import com.example.projectc1023i1.model.ProductVariant;
 
@@ -14,4 +15,5 @@ public interface IProductVariantService {
     List<Color> findByProductIdAndSizeId(Integer productId, Integer sizeId);
     ProductVariant findByProductIdAndColorIdAndSizeId(Integer productId, Integer colorId, Integer sizeId);
     void deleteProductVariant(Integer id);
+    ProductVariant UpdateProductVariant(ProductVariantDTO productVariantDTO);
 }
