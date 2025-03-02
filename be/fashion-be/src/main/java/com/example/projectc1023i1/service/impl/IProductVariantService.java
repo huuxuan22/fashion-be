@@ -4,6 +4,8 @@ import com.example.projectc1023i1.Dto.ProductMorphology;
 import com.example.projectc1023i1.Dto.ProductVariantDTO;
 import com.example.projectc1023i1.model.Color;
 import com.example.projectc1023i1.model.ProductVariant;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 
@@ -16,4 +18,5 @@ public interface IProductVariantService {
     ProductVariant findByProductIdAndColorIdAndSizeId(Integer productId, Integer colorId, Integer sizeId);
     void deleteProductVariant(Integer id);
     ProductVariant UpdateProductVariant(ProductVariantDTO productVariantDTO);
+    Page<ProductVariant> findByProductId(Integer productId, Pageable pageable);
 }

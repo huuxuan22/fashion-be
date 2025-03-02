@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -28,4 +29,8 @@ public interface IProductRepo extends JpaRepository<Product, Integer> {
     @Transactional
     @Query("update Product p set p.thumbnail = :param2 where p.productId = :param1")
     void setMainImage(@Param("param2") String param2, @Param("param1") Integer param1);
+
+    @Query("SELECT p.productName FROM Product p WHERE p.productName LIKE CONCAT('%', :param, '%')")
+    List<String> searchProducts(@Param("param") String param);
+
 }

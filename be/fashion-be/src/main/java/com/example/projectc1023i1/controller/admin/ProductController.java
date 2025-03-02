@@ -341,4 +341,20 @@ public class ProductController {
         return  ResponseEntity.ok().build();
     }
 
+    /**
+     * casicái này là tìm kiếm tên sản phẩm dựa theo từ khóa rồi trả về danh sách tên của sản phẩm
+     * @param users
+     * @param productName
+     * @return
+     */
+    @PostMapping("find-product")
+    public ResponseEntity<?> findProduct(@AuthenticationPrincipal Users users,
+                                         @RequestParam String productName) {
+        if (productName.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Bạn chưa nhập dữ liệu tìm kiếm ");
+        }
+        List<String> productNameList = productService.findAllProductByValue(productName);
+        return ResponseEntity.status(HttpStatus.OK).body(productNameList);
+    }
+
 }

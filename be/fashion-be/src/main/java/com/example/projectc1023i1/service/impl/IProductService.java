@@ -22,4 +22,6 @@ public interface IProductService {
     void uploadImage(Integer productId, String url);
     void chooseMainPhoto(String url, Integer productId);
     void setMainImage(Integer productId,String url);
+    Page<Product> getAllProductById(Integer productId, Pageable pageable);
+    List<String>  findAllProductByValue(String value);
 }

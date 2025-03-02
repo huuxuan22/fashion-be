@@ -17,6 +17,9 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -154,6 +157,22 @@ public class ProductVariantController {
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 
-
-
+    /**
+     * trả về danh sách productVariant chứa chi tiết các sản phẩm
+     * @param users
+     * @param productId
+     * @return
+     */
+    @PostMapping("get-product-list")
+    public ResponseEntity<?> getProductVariantList(@AuthenticationPrincipal Users users,
+                                                   @RequestParam Integer productId,
+                                                   @RequestParam(defaultValue = "10")  Integer size,
+                                                   @RequestParam(defaultValue = "0") Integer page) {
+        if (productId == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
+        Pageable pageable = PageRequest.of(page,size);
+        Page<ProductVariant> productVariantList = productVariantService.findByProductId(productId, pageable);
+        return ResponseEntity.status(HttpStatus.OK).body(productVariantList);
+    }
 }

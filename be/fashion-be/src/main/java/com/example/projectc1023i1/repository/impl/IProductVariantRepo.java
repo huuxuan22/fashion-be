@@ -4,6 +4,8 @@ import com.example.projectc1023i1.model.Color;
 import com.example.projectc1023i1.model.Product;
 import com.example.projectc1023i1.model.ProductVariant;
 import com.example.projectc1023i1.model.Size;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -23,7 +25,6 @@ public interface IProductVariantRepo extends JpaRepository<ProductVariant, Integ
             @Param("productId") Integer productId,
             @Param("sizeId") Integer sizeId);
 
-
     @Query(value = "select * from product_variants " +
             "where product_id = :productId " +
             "and size_id = :sizeId " +
@@ -34,4 +35,8 @@ public interface IProductVariantRepo extends JpaRepository<ProductVariant, Integ
             @Param("sizeId") Integer sizeId,
             @Param("colorId") Integer colorId
     );
+
+    @Query("SELECT p FROM ProductVariant p WHERE p.product.productId = :productId")
+    Page<ProductVariant> findByProductId(@Param("productId") Integer productId, Pageable pageable);
+
 }

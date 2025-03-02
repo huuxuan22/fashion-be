@@ -127,4 +127,19 @@ public class ProductService implements IProductService {
             productRepo.setMainImage(url,productId);
         }
     }
+
+    @Override
+    public Page<Product> getAllProductById(Integer productId, Pageable pageable) {
+        return null;
+    }
+
+    /**
+     * cái này là tìm kiếm tên sản phẩm dựa theo từ khóa rồi trả về danh sách tên của sản phẩm
+     * @param value
+     * @return
+     */
+    @Override
+    public List<String> findAllProductByValue(String value) {
+        return productRepo.searchProducts(value);
+    }
 }
