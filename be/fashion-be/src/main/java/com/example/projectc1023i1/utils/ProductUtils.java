@@ -46,7 +46,7 @@ public class ProductUtils {
         Color color = colorRepo.findById(colorId).get();
         Size size = sizeRepo.findById(sizeId).get();
         Categories categories = categoriesRepo.findById(categoryId).get();
-        return categories.getCategoriesCode() + "-" +
+        return
                 color.getColorCode().toUpperCase() + "-" +
                  size.getNameSize().toUpperCase() + "-" + LocalDateTime.now();
     }

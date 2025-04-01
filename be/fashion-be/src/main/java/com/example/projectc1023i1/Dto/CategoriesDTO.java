@@ -1,6 +1,5 @@
 package com.example.projectc1023i1.Dto;
 
-import com.example.projectc1023i1.Validation.Categories.ExistCategoriesCodeWithName;
 import com.example.projectc1023i1.Validation.Categories.ExistCategoriesName;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -14,7 +13,6 @@ import org.springframework.validation.Validator;
 @Builder
 public class CategoriesDTO implements Validator {
     @NotBlank(message = "bạn chưa điền tên loại sản phẩm ")
-    @ExistCategoriesCodeWithName
     @ExistCategoriesName
     private String categoryName;
 

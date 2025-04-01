@@ -23,7 +23,7 @@ public class ExistNumberPhoneValidator implements ConstraintValidator<ExistNumbe
         }
 
         // Nếu số điện thoại đã tồn tại trong cơ sở dữ liệu thì không hợp lệ
-        boolean exists = userRepository.findByNumberphone(numberPhone).isPresent();
+        boolean exists = userRepository.existsByNumberphone(numberPhone);
         return !exists;  // Nếu tồn tại, trả về false (không hợp lệ), nếu không tồn tại, trả về true (hợp lệ)
     }
 }

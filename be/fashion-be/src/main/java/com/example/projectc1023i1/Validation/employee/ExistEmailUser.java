@@ -13,7 +13,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Constraint(validatedBy = ExistEmailUserValidator.class)
 public @interface ExistEmailUser {
-    String message() default "*Email nhân viên này đã tồn tại ";
+    String message() default "*Email  này đã tồn tại ";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

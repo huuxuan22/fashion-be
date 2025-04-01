@@ -1,6 +1,7 @@
 package com.example.projectc1023i1.service.impl;
 
 import com.example.projectc1023i1.Dto.EmployeeDTO;
+import com.example.projectc1023i1.Dto.UserDTO;
 import com.example.projectc1023i1.Exception.UserExepion;
 import com.example.projectc1023i1.model.Users;
 import com.example.projectc1023i1.request.UpdateUserRequest;
@@ -21,4 +22,5 @@ public interface IUserService {
     Users saveUser(Users users) throws UserExepion;
     Optional<Users> findByNumerphone(String phone);
     void uploadImgEmployee(String url, String numberPhone);
+    Users convertUserDTOToUser(UserDTO userDTO);
 }

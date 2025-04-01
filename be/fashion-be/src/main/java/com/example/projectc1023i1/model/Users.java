@@ -6,6 +6,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,11 +38,9 @@ public class Users implements UserDetails { // ddaay laf class lay ra thong tin 
     @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "address")
-    private String address;
 
     @Column(name = "birthday")
-    private Date birthday;
+    private Timestamp birthday;
 
     @Column(name = "username")
     private String username;

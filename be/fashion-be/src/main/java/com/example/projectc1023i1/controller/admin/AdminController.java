@@ -140,7 +140,6 @@ public class AdminController {
         users.setPassword(passwordEncoder.encode("nhanvien123"));
         users.setIsActive(true);
 //        if (employee.get)
-        users.setAddress(employee.getProvince()+ "," + employee.getDistrict() + "," + employee.getCommune() + "," + employee.getNotes());
         userService.saveUser(users);
 //        int id  = userService.f
         Optional<Users> user = Optional.ofNullable(userService.findByNumerphone(employee.

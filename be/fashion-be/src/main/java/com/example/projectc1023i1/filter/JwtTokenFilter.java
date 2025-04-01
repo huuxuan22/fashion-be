@@ -102,6 +102,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
             final List<Pair<String, String >> bypassTokens = Arrays.asList(
                     org.modelmapper.internal.Pair.of("/api/categories/getAll","GET"),
                     org.modelmapper.internal.Pair.of("/api/categories","GET"),
+                    org.modelmapper.internal.Pair.of("/api/register","POST"),
                     org.modelmapper.internal.Pair.of("/api/auth/google","POST"),
                     org.modelmapper.internal.Pair.of("/api/categories/create","POST"),
                     org.modelmapper.internal.Pair.of("/api/admin/get-all-user","GET"),

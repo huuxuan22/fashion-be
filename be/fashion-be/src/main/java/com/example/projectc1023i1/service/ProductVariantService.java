@@ -68,11 +68,6 @@ public class ProductVariantService implements IProductVariantService {
     public ProductVariant addProductVariant(ProductMorphology productMorphology) {
         ProductVariant productVariant = modelMapper.map(productMorphology, ProductVariant.class);
         Product product = productRepo.findById(productMorphology.getProductId()).get();
-        productVariant.setSku(productUtils.getSkuFromProductDTO(
-                product.getCategories().getCategorieId(),
-                productMorphology.getColorId(),
-                productMorphology.getSizeId()
-        ));
         return productVariantRepo.save(productVariant);
     }
 
@@ -104,18 +99,12 @@ public class ProductVariantService implements IProductVariantService {
     @Override
     public ProductVariant UpdateProductVariant(ProductVariantDTO productVariantDTO) {
         ProductVariant productVariantExist = new ProductVariant();
-        Categories categories = productRepo.findById(productVariantDTO.getProductId()).get().getCategories();
         productVariantExist.setColor(colorRepo.findById(productVariantDTO.getColorId()).get());
         productVariantExist.setSize(sizeRepo.findById(productVariantDTO.getSizeId()).get());
         productVariantExist.setProduct(productRepo.findById(productVariantDTO.getProductId()).get());
         productVariantExist.setProductVariantId(productVariantDTO.getProductVariantId());
         productVariantExist.setPrice(productVariantDTO.getPrice());
         productVariantExist.setStock(productVariantDTO.getStock());
-        productVariantExist.setSku(productUtils.getSkuFromProductDTO(
-                categories.getCategorieId(),
-                productVariantDTO.getColorId(),
-                productVariantDTO.getSizeId()
-        ));
         return productVariantRepo.save(productVariantExist);
     }
 

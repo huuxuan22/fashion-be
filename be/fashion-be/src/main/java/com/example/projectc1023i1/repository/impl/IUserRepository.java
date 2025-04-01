@@ -18,12 +18,10 @@ import java.util.Optional;
 @Repository
 public interface IUserRepository extends JpaRepository<Users, Integer> {
     Optional<Users> findByUsername(String username);
-    @Query(value = "SELECT * FROM users u WHERE u.email = :email", nativeQuery = true)
-    Optional<Users> findByEmail(@Param("email") String email);
     @Query(value = "SELECT * FROM users u WHERE u.number_phone = :number", nativeQuery = true)
     Optional<Users> findByNumberphone(@Param("number") String number);
     Boolean existsByEmail(String email);
-
+    Boolean existsByNumberphone(String numberphone);
 
     @Query(value = "select u from Users u")
     Page<Users> getAllUser(Pageable pageable);

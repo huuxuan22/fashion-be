@@ -1,10 +1,9 @@
-package com.example.projectc1023i1.controller;
+package com.example.projectc1023i1.controller.category;
 
 import com.example.projectc1023i1.Dto.CategoriesDTO;
 import com.example.projectc1023i1.model.Categories;
 import com.example.projectc1023i1.respone.errorsValidate.CategoriesErrorsRespone;
 import com.example.projectc1023i1.service.impl.ICategoriesService;
-import com.example.projectc1023i1.utils.GetFirstString;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -70,7 +69,6 @@ public class CategoriesController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(combinedErrors);
         }
         Categories categories = new Categories();
-        categories.setCategoriesCode(GetFirstString.getFirstString(categoriesDTO.getCategoryName()));
         categories.setCategoriesName(categoriesDTO.getCategoryName());
         categories.setDescription(categoriesDTO.getDescription());
         categoriesService.save(categoriesService.save(categories));
@@ -157,7 +155,6 @@ public class CategoriesController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(combinedErrors);
         }
         Categories categories = new Categories();
-        categories.setCategoriesCode(GetFirstString.getFirstString(categoriesDTO.getCategoryName()));
         categories.setCategoriesName(categoriesDTO.getCategoryName());
         categories.setDescription(categoriesDTO.getDescription());
         categoriesService.save(categoriesService.save(categories));

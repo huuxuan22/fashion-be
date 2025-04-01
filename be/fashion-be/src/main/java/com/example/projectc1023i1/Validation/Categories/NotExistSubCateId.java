@@ -8,11 +8,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-@Target({ElementType.FIELD,ElementType.PARAMETER})
+@Target({ElementType.FIELD, ElementType.TYPE})
 @Retention(RetentionPolicy.RUNTIME)
-@Constraint(validatedBy = ExistCategoriesCodeWithNameValidator.class)
-public @interface ExistCategoriesCodeWithName {
-    String message() default "mã code theo tên categies này đã tồn tại (Ví dụ TTN: thời trang nữ TTN Thời trang nam )";
+@Constraint(validatedBy = NotExistSubCateValidator.class)
+public @interface NotExistSubCateId {
+    String message() default "*loại thời trang này khong tồn tại ";
     Class<?>[] groups() default {};
     Class<? extends Payload>[] payload() default {};
 }

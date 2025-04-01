@@ -6,9 +6,5 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface ICategoriesRepo extends JpaRepository<Categories,Integer> {
-    Categories findByCategoriesCode(String categoriesCode);
-
-    Boolean existsByCategoriesCode( String categoriesCode);
-
-    Boolean existsByCategoriesName( String categoriesName);
+    Boolean existsByCategoriesName(String categoriesName);
 }

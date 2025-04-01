@@ -10,10 +10,10 @@ import lombok.*;
 @NoArgsConstructor
 @Builder
 @Table(name = "categories")
-public class Categories {
+public class    Categories {
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
-    @Column(name = "category_id")
+    @Column(name = "categories_id")
     private int categorieId;
 
     @Column(name = "categories_name")
@@ -22,6 +22,4 @@ public class Categories {
     @Column(name = "description")
     private String description;
 
-    @Column(name = "categories_code")
-    private String categoriesCode;
 }

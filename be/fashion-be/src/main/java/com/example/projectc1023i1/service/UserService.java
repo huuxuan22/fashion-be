@@ -1,6 +1,7 @@
 package com.example.projectc1023i1.service;
 
 import com.example.projectc1023i1.Dto.EmployeeDTO;
+import com.example.projectc1023i1.Dto.UserDTO;
 import com.example.projectc1023i1.Exception.UserExepion;
 import com.example.projectc1023i1.model.Users;
 import com.example.projectc1023i1.repository.impl.IUserRepository;
@@ -10,6 +11,7 @@ import com.example.projectc1023i1.service.impl.IUserService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +23,8 @@ public class UserService implements IUserService {
     private IUserRepository userRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
 
     @Override
     public Page<Users> getAllUser(org.springframework.data.domain.Pageable pageable) {
@@ -60,6 +64,7 @@ public class UserService implements IUserService {
 
     @Override
     public Users saveUser(Users users) throws UserExepion {
+        users.setPassword(passwordEncoder.encode(users.getPassword()));
         return userRepository.save(users);
     }
 
@@ -71,6 +76,11 @@ public class UserService implements IUserService {
     @Override
     public void uploadImgEmployee(String url, String numberPhone) {
         userRepository.updateImage(url, numberPhone);
+    }
+
+    @Override
+    public Users convertUserDTOToUser(UserDTO userDTO) {
+        return modelMapper.map(userDTO, Users.class);
     }
 
 

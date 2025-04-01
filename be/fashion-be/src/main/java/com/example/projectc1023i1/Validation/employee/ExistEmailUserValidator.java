@@ -22,7 +22,7 @@ public class ExistEmailUserValidator implements ConstraintValidator<ExistEmailUs
         }
 
         // Kiểm tra xem email có tồn tại trong cơ sở dữ liệu
-        boolean exists = userRepository.findByEmail(email).isPresent();
+        boolean exists = userRepository.existsByEmail(email);
 
         // Nếu email tồn tại, trả về false (không hợp lệ), nếu không tồn tại trả về true (hợp lệ)
         return !exists;

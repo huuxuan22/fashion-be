@@ -40,9 +40,12 @@ public class Product {
     @Column(name = "quality")
     private Integer quality;
 
+    @Column(name = "sell_price")
+    private Integer sellPrice;
+
     @ManyToOne
-    @JoinColumn(name = "category_id")
-    private Categories categories;
+    @JoinColumn(name = "sub_cate_id")
+    private SubCategories categories;
 
     @PrePersist
     public void prePersist() {

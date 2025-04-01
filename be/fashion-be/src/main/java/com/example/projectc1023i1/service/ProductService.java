@@ -69,7 +69,6 @@ public class ProductService implements IProductService {
         productRepo.findByProductName(productDTO.getProductName())
                 .ifPresent(p -> {throw  new DataNotFoundException("Product with name " + productDTO.getProductName() + " already exists");});
         Optional<Categories> categories = categoriesRepo.findById(productDTO.getCategories());
-        product.setCategories(categories.get());
         product.setIsActive(true);
         productRepo.save(product);
         return product;
