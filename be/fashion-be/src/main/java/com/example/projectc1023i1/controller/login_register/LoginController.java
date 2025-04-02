@@ -7,9 +7,12 @@ import com.example.projectc1023i1.model.Roles;
 import com.example.projectc1023i1.model.Users;
 import com.example.projectc1023i1.request.LoginRequest;
 import com.example.projectc1023i1.respone.ErrorRespones;
+import com.example.projectc1023i1.respone.errorsValidate.LoginErrors;
 import com.example.projectc1023i1.respone.errorsValidate.RegisterErrors;
 import com.example.projectc1023i1.service.RedisService;
 import com.example.projectc1023i1.service.UserService;
+import com.example.projectc1023i1.service.VerificationService;
+import com.example.projectc1023i1.service.impl.IUserService;
 import com.example.projectc1023i1.utils.GetTokenFromRequest;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
@@ -48,20 +51,53 @@ public class LoginController {
     @Autowired
     private RedisService redisService;
     @Autowired
-    private UserService userService;
-
+    private IUserService userService;
+    @Autowired
+    private VerificationService verificationService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(
-            @RequestBody LoginRequest loginRequest
+            @Valid @RequestBody LoginRequest loginRequest,
+            BindingResult bindingResult
     ) {
+        LoginErrors loginErrorsDTO = new LoginErrors();
+        Users user = userService.findByUserName(loginRequest.getUsername());
+        boolean flag = false;
+        if (user != null) {
+            if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
+                loginErrorsDTO.setPassword("mật khẩu không chính xác");
+                flag = true;
+            }
+        }
+        if (bindingResult.hasErrors() || flag) {
+            bindingResult.getFieldErrors().stream()
+                    .forEach(fieldError -> {
+                        String field = fieldError.getField();
+                        String message = fieldError.getDefaultMessage();
+                        switch (field) {
+                            case "username":
+                                loginErrorsDTO.setUsername(
+                                        loginErrorsDTO.getUsername() == null ? message :
+                                                loginErrorsDTO.getUsername() + "; " + message
+                                );
+                                break;
+                            case "password":
+                                loginErrorsDTO.setPassword(
+                                        loginErrorsDTO.getPassword() == null ? message :
+                                                loginErrorsDTO.getPassword() + "; " + message
+                                );
+                                break;
+                        }
+                    });
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(loginErrorsDTO);
+        }
         try {
             Authentication authentication = authenticationManager.authenticate(
                     new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
             );
             // Lấy thông tin người dùng từ Authentication object
-            Users user = (Users) authentication.getPrincipal();
-            String jwt = jwtTokenUtils.generateToken(user);
+            Users userToken = (Users) authentication.getPrincipal();
+            String jwt = jwtTokenUtils.generateToken(userToken);
             return ResponseEntity.ok(jwt);
         } catch (BadCredentialsException e) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new ErrorRespones("Tài khoản hoặc mật khẩu không đúng.", HttpStatus.UNAUTHORIZED.value()));
@@ -86,7 +122,7 @@ public class LoginController {
 
 
 
-    @PostMapping("/register")
+    @PutMapping("/register")
     public ResponseEntity<?> register(@Valid @RequestBody UserDTO userDTO,
                                       BindingResult bindingResult) throws UserExepion {
         if (bindingResult.hasErrors()) {
@@ -137,19 +173,30 @@ public class LoginController {
                                         registerErrors.getEmail() + "; " + message
                         );
                         break;
-                    case "isActive":
-                        registerErrors.setIsActive(
-                                registerErrors.getIsActive() == null ? message :
-                                        registerErrors.getIsActive() + "; " + message
-                        );
-                        break;
                 }
             });
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(registerErrors);
         }
+        verificationService.sendVerificationCode(userDTO.getEmail());
+        return ResponseEntity.ok(userDTO);
+    }
+
+    @PostMapping("/send-again")
+    public ResponseEntity<?> sendCodeAgain(@RequestParam String email) {
+        verificationService.sendVerificationCode(email);
+        return ResponseEntity.ok(email);
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<?> veryCodeForSave (
+                                              @RequestParam String code,
+                                              @RequestBody UserDTO userDTO) throws UserExepion {
+        boolean flag = verificationService.verifyCode(userDTO.getEmail(), code);
+        if (!flag) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("mã xác thực không đúng");
+        }
         Users user = userService.convertUserDTOToUser(userDTO);
         user.setRole(Roles.builder().roleId(1).roleName(Roles.USER).build());
-
         userService.saveUser(user);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(userDTO.getUsername(),userDTO.getPassword())
@@ -158,6 +205,4 @@ public class LoginController {
         String jwt = tokenUtils.generateToken(register);
         return ResponseEntity.ok(jwt);
     }
-
-
 }

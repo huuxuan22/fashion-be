@@ -83,5 +83,10 @@ public class UserService implements IUserService {
         return modelMapper.map(userDTO, Users.class);
     }
 
+    @Override
+    public Users findByUserName(String userName) {
+        return userRepository.findByUsername(userName).orElse(null);
+    }
+
 
 }

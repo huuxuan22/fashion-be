@@ -17,12 +17,12 @@ import java.util.Optional;
 
 @Repository
 public interface IUserRepository extends JpaRepository<Users, Integer> {
-    Optional<Users> findByUsername(String username);
+    @Query(value = "SELECT * FROM users u WHERE u.username = :number", nativeQuery = true)
+    Optional<Users> findByUsername (@Param("number") String username);
     @Query(value = "SELECT * FROM users u WHERE u.number_phone = :number", nativeQuery = true)
     Optional<Users> findByNumberphone(@Param("number") String number);
     Boolean existsByEmail(String email);
     Boolean existsByNumberphone(String numberphone);
-
     @Query(value = "select u from Users u")
     Page<Users> getAllUser(Pageable pageable);
     @Transactional
@@ -30,6 +30,7 @@ public interface IUserRepository extends JpaRepository<Users, Integer> {
     @Query(value = "update Users as u set u.imgUrl = :param1 where u.numberphone = :param2")
     void updateImage(@Param("param1") String param1, @Param("param2") String param2);
 
+    Boolean existsByUsername(String username);
 //    @Query(value = "")
 //    void updateProfile(UpdateUserRequest user, Integer userId);
 

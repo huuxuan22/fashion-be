@@ -20,9 +20,23 @@ public class GlobalExceptionHandler{
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(BlockEmailException.class)
+    public ResponseEntity<String> blockEmailException(BlockEmailException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(BlockEmailExceptionUnthorizi.class)
+    public ResponseEntity<String> blockEmailExceptionUnthorizi(BlockEmailExceptionUnthorizi ex) {
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(ex.getMessage());
+    }
+
     @ExceptionHandler(PayloadTooLargeException.class)
     public ResponseEntity<String> handlePayloadTooLargeException(PayloadTooLargeException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.PAYLOAD_TOO_LARGE);
+    }
+    @ExceptionHandler(UnsuportedMediaTypeException.class)
+    public ResponseEntity<String> handleUnsuportedMediaType(PayloadTooLargeException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
     }
 
     @ExceptionHandler(HandlerRuntimeException.class)
@@ -30,10 +44,7 @@ public class GlobalExceptionHandler{
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    @ExceptionHandler(UnsupportedMediaTypeException.class)
-    public ResponseEntity<String> handleUnsupportedMediaTypeException(UnsupportedMediaTypeException ex) {
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);
-    }
+
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGeneralException(Exception ex) {

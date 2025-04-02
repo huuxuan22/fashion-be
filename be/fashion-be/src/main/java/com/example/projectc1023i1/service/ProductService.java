@@ -1,26 +1,22 @@
 package com.example.projectc1023i1.service;
 
-import com.example.projectc1023i1.Dto.ImageDTO;
+import com.example.projectc1023i1.Dto.ListCharacter;
 import com.example.projectc1023i1.Dto.ProductDTO;
 import com.example.projectc1023i1.Dto.ProductUpateDTO;
 import com.example.projectc1023i1.Exception.DataNotFoundException;
-import com.example.projectc1023i1.Exception.HandlerRuntimeException;
 import com.example.projectc1023i1.Exception.PayloadTooLargeException;
-import com.example.projectc1023i1.Exception.UnsupportedMediaTypeException;
-import com.example.projectc1023i1.model.Categories;
+import com.example.projectc1023i1.Exception.UnsuportedMediaTypeException;
 import com.example.projectc1023i1.model.Image;
 import com.example.projectc1023i1.model.Product;
 import com.example.projectc1023i1.model.ProductVariant;
 import com.example.projectc1023i1.repository.impl.*;
 import com.example.projectc1023i1.service.impl.IProductService;
-import com.example.projectc1023i1.service.impl.ISizeService;
 import com.example.projectc1023i1.utils.ProductUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +25,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class ProductService implements IProductService {
@@ -49,6 +44,9 @@ public class ProductService implements IProductService {
     private ProductUtils productUtils;
     @Autowired
     private IImageRepo imageRepo;
+    @Autowired
+    private ISubCategories subCategoriesRepo;
+
 
     @Override
     public Page<Product> getAllProducts(Pageable pageable) {
@@ -63,16 +61,51 @@ public class ProductService implements IProductService {
     }
 
     @Override
+    @Modifying
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Product addProduct(ProductDTO productDTO) {
+    public Product addProduct(ProductDTO productDTO) throws IOException {
         Product product = modelMapper.map(productDTO, Product.class);
-        productRepo.findByProductName(productDTO.getProductName())
-                .ifPresent(p -> {throw  new DataNotFoundException("Product with name " + productDTO.getProductName() + " already exists");});
-        Optional<Categories> categories = categoriesRepo.findById(productDTO.getCategories());
+        List<String> imageListString = new ArrayList<>();
+        List<MultipartFile> multipartFiles = productDTO.getThumbnail();
+        List<ListCharacter> characters = productDTO.getCharacters();
+        for (MultipartFile file : multipartFiles) {
+            if (file.getSize() > 1024 * 1024) {
+                throw  new PayloadTooLargeException("anh qua lon, lon hon 10Byte");
+            }
+            String contentType = file.getContentType();
+            if (contentType == null || !contentType.contains("image/")) {
+                throw  new UnsuportedMediaTypeException("Không hỗ trợ loại ảnh này ");
+            }
+            String fileName = productUtils.storeFile(file,null);
+            imageListString.add(fileName);
+        }
+        product.setThumbnail(imageListString.get(0));
+        product.setQuality(productDTO.getTotalQuantity());
+        product.setThumbnail(imageListString.get(0));
         product.setIsActive(true);
-        productRepo.save(product);
+        product.setCategories(subCategoriesRepo.findById(Long.valueOf(productDTO.getSubCategories())).get());
+        Product productSave = productRepo.save(product);
+        for (String image : imageListString) {
+            imageRepo.save(Image.builder().product(productSave).imageUrl(image).build());
+        }
+        List<ProductVariant> productVariantList = new ArrayList<>();
+        for (ListCharacter character : characters) {
+            productVariantList.add(ProductVariant.builder()
+                            .color(colorRepo.findById(character.getColorId()).get())
+                            .size(sizeRepo.findById(character.getSizeId()).get())
+                            .price(Double.valueOf(character.getQuality()))
+                            .product(productSave)
+                            .stock((character.getQuality()))
+                            .sku(productUtils.getSkuFromProductDTO(
+                                    character.getColorId(),
+                                    character.getSizeId()
+                            ) + "00"+character.getQuality())
+                    .build());
+        }
+        productVariantRepo.saveAll(productVariantList);
         return product;
     }
+
 
 
 

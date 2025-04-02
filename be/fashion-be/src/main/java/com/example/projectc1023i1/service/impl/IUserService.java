@@ -23,4 +23,5 @@ public interface IUserService {
     Optional<Users> findByNumerphone(String phone);
     void uploadImgEmployee(String url, String numberPhone);
     Users convertUserDTOToUser(UserDTO userDTO);
+    Users findByUserName(String userName);
 }

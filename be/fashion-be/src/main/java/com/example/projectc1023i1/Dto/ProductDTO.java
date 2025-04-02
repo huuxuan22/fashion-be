@@ -3,9 +3,7 @@ package com.example.projectc1023i1.Dto;
 import com.example.projectc1023i1.Validation.Categories.NotExistCategory;
 import com.example.projectc1023i1.Validation.product.ProductExist;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.*;
 import org.springframework.validation.Errors;
 import org.springframework.validation.Validator;
@@ -19,30 +17,60 @@ import java.util.List;
 @NoArgsConstructor
 @Builder
 public class ProductDTO implements Validator {
-    @ProductExist
-    @NotBlank(message = "Chưa điền tên của sản phẩm")
-    @Size(max = 100,message = "không nhập quá 100 tù")
+    @NotBlank(message = "Tên sản phẩm không được để trống")
+    @Size(max = 255, message = "Tên sản phẩm không vượt quá 255 ký tự")
+    @ProductExist(message = "Tên sản phẩm đã tồn tại")
     private String productName;
-    @NotBlank(message = "Bạn chưa nhập mô tả")
-    @Size(max = 500, message = "Không được nhập quá 500 từ")
+
+    @NotBlank(message = "Mô tả sản phẩm không được để trống")
     private String description;
-    
-    @NotNull(message = "Bạn chưa chọn category")
-    @NotExistCategory
-    private Integer categories;
+
+    @NotNull(message = "Thông số sản phẩm không được để trống")
+    @Size(min = 1, message = "Phải có ít nhất 1 thông số sản phẩm")
+    private List<@Valid ListCharacter> characters;
+
+    @NotNull(message = "Ảnh thumbnail không được để trống")
+    @Size(min = 1, max = 5, message = "Phải có từ 1 đến 5 ảnh thumbnail")
+    private List<MultipartFile> thumbnail;
+
+    @NotNull(message = "Giá gốc không được để trống")
+    @Min(value = 0, message = "Giá gốc không được âm")
+    @Max(value = 100000000, message = "Giá gốc không vượt quá 100,000,000")
+    private Integer price;
+
+    @NotNull(message = "Giá bán không được để trống")
+    @Min(value = 0, message = "Giá bán không được âm")
+    @Max(value = 100000000, message = "Giá bán không vượt quá 100,000,000")
+    private Integer sellPrice;
+
+    @NotNull(message = "Danh mục phụ không được để trống")
+    @NotExistCategory(message = "Danh mục phụ không tồn tại")
+    private Integer subCategories;
+
+    @Builder.Default
+    private Boolean isActive = true;
 
     @Override
     public boolean supports(Class<?> clazz) {
-        return false;
+        return ProductDTO.class.isAssignableFrom(clazz);
     }
 
     @Override
     public void validate(Object target, Errors errors) {
+        ProductDTO productDTO = (ProductDTO) target;
+        // Kiểm tra sellPrice không lớn hơn price
+        if (productDTO.getPrice() != null && productDTO.getSellPrice() != null
+                && productDTO.getSellPrice() > productDTO.getPrice()) {
+            errors.rejectValue("sellPrice", "sellPrice.invalid",
+                    "Giá bán không được lớn hơn giá gốc");
+        }
     }
-
-    @Override
-    public Errors validateObject(Object target) {
-        return Validator.super.validateObject(target);
+    public Integer getTotalQuantity() {
+        if (characters == null || characters.isEmpty()) {
+            return 0;
+        }
+        return characters.stream()
+                .mapToInt(ListCharacter::getQuality)
+                .sum();
     }
-
 }

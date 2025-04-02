@@ -19,6 +19,7 @@ import com.example.projectc1023i1.service.impl.IProductVariantService;
 import com.example.projectc1023i1.utils.ProductUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
+import lombok.*;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.UrlResource;
@@ -87,11 +88,10 @@ public class ProductController {
      * @param bindingResult
      * @return
      */
-    @PostMapping(value = "add-product")
-//    http://localhost:8080/admin/product/add-product
+    @PostMapping(value = "add-product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addProduct( @AuthenticationPrincipal Users user,
-                                         @Valid @RequestBody ProductDTO productDTO,
-                                         BindingResult bindingResult) {
+                                         @Valid @ModelAttribute ProductDTO productDTO,
+                                         BindingResult bindingResult) throws IOException {
 
         if (bindingResult.hasErrors()) {
             ProductErrorsRespone productErrorsRespone = new ProductErrorsRespone();
@@ -100,22 +100,52 @@ public class ProductController {
                         String field = error.getField();
                         String message = error.getDefaultMessage();
                         switch (field) {
-                            case "productName":
-                                productErrorsRespone.setProductName(message);
+                            case "categoriesId":
+                                productErrorsRespone.setProductName(
+                                        (productErrorsRespone.getProductName()!= null ?
+                                                productErrorsRespone.getProductName() + "," : "") + message);
                                 break;
                             case "description":
-                                productErrorsRespone.setDescription(message);
+                                productErrorsRespone.setDescription(
+                                        (productErrorsRespone.getDescription() != null ?
+                                                productErrorsRespone.getDescription() + "," : "") + message
+                                );
                                 break;
-                            case "categories":
-                                productErrorsRespone.setCategories(message);
+                            case "characters":
+                                productErrorsRespone.setCharacters(
+                                        (productErrorsRespone.getCharacters() != null ?
+                                                productErrorsRespone.getCharacters() + "," : "") + message
+                                );
                                 break;
-
-                            default:
+                            case "thumbnail":
+                                productErrorsRespone.setThumbnail(
+                                        (productErrorsRespone.getThumbnail() != null ?
+                                                productErrorsRespone.getThumbnail() + "," : "") + message
+                                );
+                                break;
+                            case "price":
+                                productErrorsRespone.setPrice(
+                                        (productErrorsRespone.getPrice() != null ?
+                                                productErrorsRespone.getPrice() + "," : "") + message
+                                );
+                                break;
+                            case "sellPrice":
+                                productErrorsRespone.setSellPrice(
+                                        (productErrorsRespone.getSellPrice() != null ?
+                                                productErrorsRespone.getSellPrice() + "," : "") + message
+                                );
+                                break;
+                            case "subCategories":
+                                productErrorsRespone.setSubCategories(
+                                        (productErrorsRespone.getSubCategories() != null ?
+                                                productErrorsRespone.getSubCategories() + "," : "") + message
+                                );
                                 break;
                         }
                     });
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productErrorsRespone);
         }
+
         Product product = productService.addProduct(productDTO);
         return ResponseEntity.ok("Add product successfully");
     }
@@ -166,8 +196,6 @@ public class ProductController {
             if (contentType == null || !contentType.contains("image/")) {
                 return ResponseEntity.status(HttpStatus.UNSUPPORTED_MEDIA_TYPE).body("unsupported image type");
             }
-            String fileName = productUtils.storeFile(file);
-            productService.uploadImage(imageDTO.getProductId(), fileName);
         }
         return null;
     }
@@ -307,7 +335,7 @@ public class ProductController {
                                 errors.setDescription(message);
                                 break;
                             case "categories":
-                                errors.setCategories(message);
+//                                errors.setCategories(message);
                                 break;
                         }
                     });

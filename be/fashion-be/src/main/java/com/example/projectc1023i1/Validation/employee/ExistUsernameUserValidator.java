@@ -20,8 +20,10 @@ public class ExistUsernameUserValidator implements ConstraintValidator<ExistUser
         if (username == null || username.isEmpty()) {
             return true;  // Chấp nhận giá trị trống nếu không yêu cầu
         }
-
+        if (!userRepository.existsByUsername(username)) {
+            return true;
+        }
         // Kiểm tra xem username đã tồn tại trong cơ sở dữ liệu chưa
-        return userRepository.findByUsername(username) == null; // Nếu trả về null, có nghĩa là không tồn tại
+        return false; // Nếu trả về null, có nghĩa là không tồn tại
     }
 }

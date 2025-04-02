@@ -2,6 +2,7 @@ package com.example.projectc1023i1.Dto;
 
 import com.example.projectc1023i1.Validation.employee.ExistEmailUser;
 import com.example.projectc1023i1.Validation.employee.ExistNumberphoneUser;
+import com.example.projectc1023i1.Validation.employee.ExistUsernameUser;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.Column;
 import jakarta.persistence.GeneratedValue;
@@ -40,13 +41,14 @@ public class UserDTO implements Validator {
 
     @NotNull(message = "Ngày sinh không được để trống")
     @Past(message = "Ngày sinh phải là một ngày trong quá khứ")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy")  // Định dạng ngày tháng
     @DateTimeFormat(pattern = "dd-MM-yyyy")
-    private Timestamp birthday;
+    private LocalDate birthday;
+
 
     @NotBlank(message = "Tên đăng nhập không được để trống")
     @Size(min = 5, max = 20, message = "Tên đăng nhập phải có từ 5 đến 20 ký tự")
-    @ExistEmailUser
+    @ExistUsernameUser
     private String username;
 
     @NotBlank(message = "Mật khẩu không được để trống")
@@ -58,8 +60,6 @@ public class UserDTO implements Validator {
     @ExistEmailUser
     private String email;
 
-    @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
-    private Boolean isActive = true;
 
     @Override
     public boolean supports(Class<?> clazz) {

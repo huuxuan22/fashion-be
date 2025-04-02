@@ -26,7 +26,7 @@ dependencies {
 
 
 	// cai nay de gui email xac thuc
-//    implementation 'org.springframework.boot:spring-boot-starter-mail'
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
 	// Thêm các module khác cần thiết tại đây
 //    testImplementation 'org.springframework.security:spring-security-test'

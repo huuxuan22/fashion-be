@@ -40,20 +40,27 @@ public class ProductUtils {
     @Autowired
     private ICategoriesRepo categoriesRepo;
 
-    public String getSkuFromProductDTO(Integer categoryId,
+    public String getSkuFromProductDTO(
                                               Integer colorId,
                                               Integer sizeId) {
         Color color = colorRepo.findById(colorId).get();
         Size size = sizeRepo.findById(sizeId).get();
-        Categories categories = categoriesRepo.findById(categoryId).get();
         return
-                color.getColorCode().toUpperCase() + "-" +
-                 size.getNameSize().toUpperCase() + "-" + LocalDateTime.now();
+                color.getColorName().toUpperCase() + "-" +
+                 size.getNameSize().toUpperCase() + "-" ;
     }
 
-    public String storeFile(MultipartFile file)throws IOException {
+    public String storeFile(MultipartFile file,String fileNameOld)throws IOException {
         if (!isImageFile(file) || file.getOriginalFilename() == null) {
             throw new IOException("invalid file format");
+        }
+        String uploadDirExist = "uploads/";
+        // Xóa ảnh cũ nếu có
+        if (fileNameOld != null && !fileNameOld.isEmpty()) {
+            Path oldFilePath = Paths.get(uploadDirExist + fileNameOld);
+            if (Files.exists(oldFilePath)) {
+                Files.delete(oldFilePath);  // Xóa file ảnh cũ
+            }
         }
         String fileName = StringUtils.cleanPath(Objects.requireNonNull(file.getOriginalFilename()));
         String uniqueFileName = UUID.randomUUID().toString() + "-" + fileName;

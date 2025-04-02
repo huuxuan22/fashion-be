@@ -99,10 +99,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
 
         private boolean isByPassToken(@NonNull HttpServletRequest request) {
 
-            final List<Pair<String, String >> bypassTokens = Arrays.asList(
+                final List<Pair<String, String >> bypassTokens = Arrays.asList(
                     org.modelmapper.internal.Pair.of("/api/categories/getAll","GET"),
                     org.modelmapper.internal.Pair.of("/api/categories","GET"),
-                    org.modelmapper.internal.Pair.of("/api/register","POST"),
                     org.modelmapper.internal.Pair.of("/api/auth/google","POST"),
                     org.modelmapper.internal.Pair.of("/api/categories/create","POST"),
                     org.modelmapper.internal.Pair.of("/api/admin/get-all-user","GET"),
@@ -111,7 +110,11 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     org.modelmapper.internal.Pair.of("/add-new-employee","POST"),
                     org.modelmapper.internal.Pair.of("/upload-image-employee","POST"),
                     org.modelmapper.internal.Pair.of("/update-employee","PUT"),
-                    org.modelmapper.internal.Pair.of("/fashion/login","POST")
+                    org.modelmapper.internal.Pair.of("/api/login","POST"),
+                    org.modelmapper.internal.Pair.of("/api/register","PUT"),
+                    org.modelmapper.internal.Pair.of("/api/send","POST"),
+                        org.modelmapper.internal.Pair.of("/api/save","POST"),
+                        org.modelmapper.internal.Pair.of("/api/send-again","POST")
             );
 
                 for (Pair<String, String > token : bypassTokens) {
