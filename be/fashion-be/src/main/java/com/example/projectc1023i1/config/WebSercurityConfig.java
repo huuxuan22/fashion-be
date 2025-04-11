@@ -51,7 +51,7 @@ public class WebSercurityConfig {
                 .authorizeHttpRequests((request)   -> {
 
                         request.requestMatchers(
-                                        "**")
+                                        "/ws/**","**")
 
                                 .permitAll()
                             // phaan quyen cho user
@@ -70,7 +70,9 @@ public class WebSercurityConfig {
             @Override
             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(List.of("*")); // cho phép tất cả domain gửi yêu cầu
+                configuration.setAllowedOrigins(List.of("http://localhost:3000")); // frontend URL cụ thể
+                configuration.setAllowCredentials(true); // ✅ BẮT BUỘC khi dùng credentials
+                // cho phép tất cả domain gửi yêu cầu
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"));
                 // cho phép cái http nhất định đi qua
                 configuration.setAllowedHeaders(Arrays.asList("authorization", "content-type", "x-auth-token"));
@@ -83,6 +85,9 @@ public class WebSercurityConfig {
         }) ;
             return http.build();
     }
+
+
+
 
 
 }

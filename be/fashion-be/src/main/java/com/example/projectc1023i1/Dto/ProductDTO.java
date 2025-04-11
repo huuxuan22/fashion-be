@@ -1,6 +1,7 @@
 package com.example.projectc1023i1.Dto;
 
 import com.example.projectc1023i1.Validation.Categories.NotExistCategory;
+import com.example.projectc1023i1.Validation.Categories.NotExistSubCateId;
 import com.example.projectc1023i1.Validation.product.ProductExist;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
@@ -27,11 +28,8 @@ public class ProductDTO implements Validator {
 
     @NotNull(message = "Thông số sản phẩm không được để trống")
     @Size(min = 1, message = "Phải có ít nhất 1 thông số sản phẩm")
-    private List<@Valid ListCharacter> characters;
+        private List<@Valid ListCharacter> characters;
 
-    @NotNull(message = "Ảnh thumbnail không được để trống")
-    @Size(min = 1, max = 5, message = "Phải có từ 1 đến 5 ảnh thumbnail")
-    private List<MultipartFile> thumbnail;
 
     @NotNull(message = "Giá gốc không được để trống")
     @Min(value = 0, message = "Giá gốc không được âm")
@@ -44,7 +42,7 @@ public class ProductDTO implements Validator {
     private Integer sellPrice;
 
     @NotNull(message = "Danh mục phụ không được để trống")
-    @NotExistCategory(message = "Danh mục phụ không tồn tại")
+    @NotExistSubCateId(message = "Danh mục phụ không tồn tại")
     private Integer subCategories;
 
     @Builder.Default

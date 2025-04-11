@@ -37,4 +37,9 @@ public class SubCategoryService implements ISubCategoryService {
     public List<SubCategories> getAllSubCategories() {
         return List.of();
     }
+
+    @Override
+    public List<SubCategories> findByCategoryId(Long categoryId) {
+        return  subCategoriesRepository.findAllByCategoriesId(categoryId);
+    }
 }

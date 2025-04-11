@@ -8,10 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class NotExistSubCateValidator implements ConstraintValidator<NotExistSubCateId,Integer> {
     @Autowired
-    private ICategoriesRepo categoriesRepository;
+    private ISubCategories subCategories;
 
     @Override
     public boolean isValid(Integer integer, ConstraintValidatorContext constraintValidatorContext) {
-        return categoriesRepository.existsById(integer);
+        return subCategories.existsById(Long.valueOf(integer));
     }
 }

@@ -1,6 +1,7 @@
 package com.example.projectc1023i1.utils;
 
 import com.example.projectc1023i1.Dto.ProductDTO;
+import com.example.projectc1023i1.Exception.IOException;
 import com.example.projectc1023i1.model.Categories;
 import com.example.projectc1023i1.model.Color;
 import com.example.projectc1023i1.model.Product;
@@ -16,7 +17,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -50,9 +50,9 @@ public class ProductUtils {
                  size.getNameSize().toUpperCase() + "-" ;
     }
 
-    public String storeFile(MultipartFile file,String fileNameOld)throws IOException {
+    public String storeFile(MultipartFile file,String fileNameOld) throws IOException, java.io.IOException {
         if (!isImageFile(file) || file.getOriginalFilename() == null) {
-            throw new IOException("invalid file format");
+            throw new com.example.projectc1023i1.Exception.IOException("Ảnh bạn chọn không phù hợp ");
         }
         String uploadDirExist = "uploads/";
         // Xóa ảnh cũ nếu có

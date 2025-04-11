@@ -9,4 +9,5 @@ public interface ISubCategoryService {
     Boolean deleteSubCategory(SubCategories subCategories);
     SubCategories getSubCategory(SubCategories subCategories);
     List<SubCategories> getAllSubCategories();
+    List<SubCategories> findByCategoryId(Long categoryId);
 }

@@ -49,8 +49,11 @@ public class ProductService implements IProductService {
 
 
     @Override
-    public Page<Product> getAllProducts(Pageable pageable) {
-        return productRepo.getAllActiveProduct(pageable);
+    public Page<Product> getAllProducts(Pageable pageable,String search, Integer categoryId) {
+        if (categoryId!=0) {
+            return productRepo.findByProductNameAndCategories(search, categoryId, pageable);
+        }
+        return productRepo.getAllActiveProduct(pageable,search);
     }
 
     @Override
@@ -63,10 +66,10 @@ public class ProductService implements IProductService {
     @Override
     @Modifying
     @Transactional(propagation = Propagation.REQUIRED, rollbackFor = Exception.class)
-    public Product addProduct(ProductDTO productDTO) throws IOException {
+    public Product addProduct(ProductDTO productDTO,List<MultipartFile> listFile) throws IOException {
         Product product = modelMapper.map(productDTO, Product.class);
         List<String> imageListString = new ArrayList<>();
-        List<MultipartFile> multipartFiles = productDTO.getThumbnail();
+        List<MultipartFile> multipartFiles = listFile;
         List<ListCharacter> characters = productDTO.getCharacters();
         for (MultipartFile file : multipartFiles) {
             if (file.getSize() > 1024 * 1024) {
@@ -84,6 +87,7 @@ public class ProductService implements IProductService {
         product.setThumbnail(imageListString.get(0));
         product.setIsActive(true);
         product.setCategories(subCategoriesRepo.findById(Long.valueOf(productDTO.getSubCategories())).get());
+        product.setPrice(productDTO.getPrice());
         Product productSave = productRepo.save(product);
         for (String image : imageListString) {
             imageRepo.save(Image.builder().product(productSave).imageUrl(image).build());
@@ -105,9 +109,6 @@ public class ProductService implements IProductService {
         productVariantRepo.saveAll(productVariantList);
         return product;
     }
-
-
-
 
 
     @Override
@@ -173,5 +174,20 @@ public class ProductService implements IProductService {
     @Override
     public List<String> findAllProductByValue(String value) {
         return productRepo.searchProducts(value);
+    }
+
+    @Override
+    public Long countProduct() {
+        Long count= Long.valueOf(productRepo.countProduct());
+        if (count % 10 == 0) {
+            return count/10;
+        }else {
+            return count/10+1;
+        }
+    }
+
+    @Override
+    public List<Product> getDiscountProduct() {
+        return productRepo.getDiscountProduct();
     }
 }

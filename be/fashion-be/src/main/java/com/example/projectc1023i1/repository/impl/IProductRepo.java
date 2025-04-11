@@ -1,6 +1,7 @@
 package com.example.projectc1023i1.repository.impl;
 
 import com.example.projectc1023i1.model.Product;
+import com.example.projectc1023i1.model.ProductVariant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -15,8 +16,31 @@ import java.util.Optional;
 
 @Repository
 public interface IProductRepo extends JpaRepository<Product, Integer> {
-    @Query("select p from Product as p where p.isActive = true order by p.createdAt desc ")
-     Page<Product> getAllActiveProduct(Pageable pageable);
+    @Query("select p from Product as p where p.isActive = true and p.productName like  concat('%',:search,'%') order by p.createdAt desc ")
+     Page<Product> getAllActiveProduct(Pageable pageable,@Param("search") String search);
+    @Query(value = "SELECT p.* FROM products AS p " +
+            "INNER JOIN sub_categories AS sc ON sc.sub_cate_id = p.sub_cate_id " +
+            "INNER JOIN categories AS c ON c.categories_id = sc.categories_id " +
+            "WHERE c.categories_id = :categoryId AND p.product_name LIKE CONCAT('%', :param, '%') " +
+            "ORDER BY p.created_at DESC",
+            countQuery = "SELECT COUNT(*) FROM products AS p " +
+                    "INNER JOIN sub_categories AS sc ON sc.sub_cate_id = p.sub_cate_id " +
+                    "INNER JOIN categories AS c ON c.categories_id = sc.categories_id " +
+                    "WHERE c.categories_id = :categoryId AND p.product_name LIKE CONCAT('%', :param, '%')",
+            nativeQuery = true)
+    Page<Product> findByProductNameAndCategories(
+            @Param("param") String productName,
+            @Param("categoryId") Integer categoryId,
+            Pageable pageable
+    );
+
+    /**
+     * lay sanr pham giam gia
+     * @return
+     */
+    @Query("select p from Product p where p.isActive = true order by p.createdAt limit 3")
+    List<Product> getDiscountProduct();
+
     @Query("select p from Product as p where p.productName = :param")
     Optional<Product> findByProductName(@Param("param") String productName);
     @Modifying
@@ -32,5 +56,7 @@ public interface IProductRepo extends JpaRepository<Product, Integer> {
 
     @Query("SELECT p.productName FROM Product p WHERE p.productName LIKE CONCAT('%', :param, '%')")
     List<String> searchProducts(@Param("param") String param);
+    @Query("select  count(p) from Product p")
+    Integer countProduct();
 
 }

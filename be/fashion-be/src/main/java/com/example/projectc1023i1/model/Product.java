@@ -43,6 +43,9 @@ public class Product {
     @Column(name = "sell_price")
     private Integer sellPrice;
 
+    @Column(name = "price")
+    private Integer price;
+
     @ManyToOne
     @JoinColumn(name = "sub_cate_id")
     private SubCategories categories;

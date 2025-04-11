@@ -24,6 +24,10 @@ dependencies {
 
 	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'  // Phiên bản mới nhất
 
+	// MapStruct
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
 
 	// cai nay de gui email xac thuc
     implementation 'org.springframework.boot:spring-boot-starter-mail'
@@ -55,6 +59,8 @@ dependencies {
 // email xac thuc
 	implementation 'org.springframework.boot:spring-boot-starter-mail'
 // web-socket
+	implementation 'org.springframework.boot:spring-boot-starter-websocket'
+
 
 
 	// Actutor là 1 thư viện giúp spring boot quản lý dự án với helth Check,
@@ -82,10 +88,7 @@ dependencies {
 	// Thư viện Nimbus JOSE JWT
 	implementation 'com.nimbusds:nimbus-jose-jwt:9.31'
 
-	// Thư viện này làm việc với firebase xử lý với ảnh
-	implementation('com.google.firebase:firebase-admin:9.1.0') {
-		exclude group: 'com.google.guava', module: 'guava'
-	}// Phiên bản mới nhất
+	// Phiên bản mới nhất
 	implementation 'com.google.auth:google-auth-library-oauth2-http:1.12.0' // Nếu cần
 	implementation 'com.google.cloud:google-cloud-storage:2.4.0'  // SDK cho Google Cloud Storage
 

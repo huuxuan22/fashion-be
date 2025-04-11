@@ -34,6 +34,11 @@ public class GlobalExceptionHandler{
     public ResponseEntity<String> handlePayloadTooLargeException(PayloadTooLargeException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.PAYLOAD_TOO_LARGE);
     }
+
+    @ExceptionHandler(IOException.class)
+    public ResponseEntity<String> handlePayloadTooLargeException(IOException ex) {
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
+    }
     @ExceptionHandler(UnsuportedMediaTypeException.class)
     public ResponseEntity<String> handleUnsuportedMediaType(PayloadTooLargeException ex) {
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNSUPPORTED_MEDIA_TYPE);

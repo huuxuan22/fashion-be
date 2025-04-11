@@ -15,16 +15,15 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-@RequestMapping
-@RestController("/api/users/")
+@RequestMapping("/api/users")
+@RestController
 public class UserController {
     @Autowired
     private UserService userService;
 
     @GetMapping("/profile")
     public ResponseEntity<Users> getUserProfileHandler (@AuthenticationPrincipal Users user) throws UserExepion {
-        Users users = userService.findUserById(user.getUserId());
-        return new ResponseEntity<Users>(users, HttpStatus.ACCEPTED);
+        return new ResponseEntity<Users>(user, HttpStatus.ACCEPTED);
     }
 
     @GetMapping("/{value}")

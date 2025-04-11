@@ -22,4 +22,6 @@ public class    Categories {
     @Column(name = "description")
     private String description;
 
+    @Column(name = "thumbnail")
+    private String thumbnail;
 }

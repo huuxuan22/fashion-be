@@ -12,10 +12,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/subcategory/")
@@ -52,5 +51,11 @@ public class SubCategoryController {
         subCategories.setCategories(categoriesService.findById(categoryDTO.getCategoriesId()).get());
         subCategoryService.saveSubCategory(subCategories);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("category/{categoryId}")
+    public ResponseEntity<?> getSubCategory(@PathVariable("categoryId") Long categoryId) {
+        List<SubCategories> subCategories = subCategoryService.findByCategoryId(categoryId);
+        return ResponseEntity.status(HttpStatus.OK).body(subCategories);
     }
 }

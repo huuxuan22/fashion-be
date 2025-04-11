@@ -1,9 +1,6 @@
 package com.example.projectc1023i1.controller.admin;
 
-import com.example.projectc1023i1.Dto.ImageDTO;
-import com.example.projectc1023i1.Dto.ProductDTO;
-import com.example.projectc1023i1.Dto.ProductMorphology;
-import com.example.projectc1023i1.Dto.ProductUpateDTO;
+import com.example.projectc1023i1.Dto.*;
 import com.example.projectc1023i1.model.Image;
 import com.example.projectc1023i1.model.Product;
 import com.example.projectc1023i1.model.Users;
@@ -65,10 +62,13 @@ public class ProductController {
      * @param page
      * @return
      */
-    @GetMapping("get-all-product")
+    @GetMapping("get-all")
     public ResponseEntity<?> getAllProduct(@AuthenticationPrincipal Users user
                                             , @RequestParam("size") int size
-                                            , @RequestParam("page") int page) {
+                                            , @RequestParam("page") int page
+                                            , @RequestParam("search") String search
+                                            , @RequestParam("categoryId") Integer categoryId
+                                           ) {
         if (user == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Người dùng đang bị null hoặc chưa đăng nhập");
         }
@@ -77,7 +77,7 @@ public class ProductController {
             page = 0;
         }
         Pageable pageable =  PageRequest.of(page,size);
-        Page<Product> page1 = productService.getAllProducts( pageable);
+        Page<Product> page1 = productService.getAllProducts(pageable,search.trim(),categoryId);
         return ResponseEntity.ok(page1);
     }
 
@@ -90,9 +90,9 @@ public class ProductController {
      */
     @PostMapping(value = "add-product", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> addProduct( @AuthenticationPrincipal Users user,
-                                         @Valid @ModelAttribute ProductDTO productDTO,
-                                         BindingResult bindingResult) throws IOException {
-
+                                         @Valid @RequestPart ProductDTO productDTO,
+                                         BindingResult bindingResult,
+                                         @RequestPart(value = "listFile",required = false) List<MultipartFile> listFile) throws IOException {
         if (bindingResult.hasErrors()) {
             ProductErrorsRespone productErrorsRespone = new ProductErrorsRespone();
             bindingResult.getFieldErrors().stream()
@@ -100,7 +100,7 @@ public class ProductController {
                         String field = error.getField();
                         String message = error.getDefaultMessage();
                         switch (field) {
-                            case "categoriesId":
+                            case "productName":
                                 productErrorsRespone.setProductName(
                                         (productErrorsRespone.getProductName()!= null ?
                                                 productErrorsRespone.getProductName() + "," : "") + message);
@@ -115,12 +115,6 @@ public class ProductController {
                                 productErrorsRespone.setCharacters(
                                         (productErrorsRespone.getCharacters() != null ?
                                                 productErrorsRespone.getCharacters() + "," : "") + message
-                                );
-                                break;
-                            case "thumbnail":
-                                productErrorsRespone.setThumbnail(
-                                        (productErrorsRespone.getThumbnail() != null ?
-                                                productErrorsRespone.getThumbnail() + "," : "") + message
                                 );
                                 break;
                             case "price":
@@ -146,7 +140,7 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(productErrorsRespone);
         }
 
-        Product product = productService.addProduct(productDTO);
+        Product product = productService.addProduct(productDTO,listFile);
         return ResponseEntity.ok("Add product successfully");
     }
 
@@ -221,6 +215,12 @@ public class ProductController {
                 return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/get-page")
+    public ResponseEntity<?> getPage(@AuthenticationPrincipal Users users) {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.countProduct());
+    }
+
 
     /**
      * Lấy tất cả hiình ảnh ra hiển thị
@@ -383,6 +383,10 @@ public class ProductController {
         }
         List<String> productNameList = productService.findAllProductByValue(productName);
         return ResponseEntity.status(HttpStatus.OK).body(productNameList);
+    }
+    @GetMapping("discount-product")
+    public ResponseEntity<?> discountProduct() {
+        return ResponseEntity.status(HttpStatus.OK).body(productService.getDiscountProduct());
     }
 
 }

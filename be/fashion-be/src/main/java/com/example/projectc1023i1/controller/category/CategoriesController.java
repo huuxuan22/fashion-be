@@ -2,8 +2,10 @@ package com.example.projectc1023i1.controller.category;
 
 import com.example.projectc1023i1.Dto.CategoriesDTO;
 import com.example.projectc1023i1.model.Categories;
+import com.example.projectc1023i1.model.SubCategories;
 import com.example.projectc1023i1.respone.errorsValidate.CategoriesErrorsRespone;
 import com.example.projectc1023i1.service.impl.ICategoriesService;
+import com.example.projectc1023i1.service.impl.ISubCategoryService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +15,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.View;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -22,6 +25,8 @@ public class CategoriesController {
     private ICategoriesService categoriesService;
     @Autowired
     private View error;
+    @Autowired
+    private ISubCategoryService subCategoryService;
 
     /**
      *
@@ -161,6 +166,7 @@ public class CategoriesController {
         return ResponseEntity.ok(categoriesDTO);
 
     }
+
 
 
 }
