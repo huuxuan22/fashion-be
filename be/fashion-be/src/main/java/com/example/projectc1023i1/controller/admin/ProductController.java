@@ -385,7 +385,7 @@ public class ProductController {
         return ResponseEntity.status(HttpStatus.OK).body(productNameList);
     }
     @GetMapping("discount-product")
-    public ResponseEntity<?> discountProduct() {
+    public ResponseEntity<?> discountProduct(@AuthenticationPrincipal Users userss) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getDiscountProduct());
     }
 

@@ -32,17 +32,22 @@ public class FeedbackController {
                                          @RequestParam(value = "page",defaultValue = "0") Integer page,
                                          @RequestParam(value = "size",defaultValue = "10") Integer size,
                                          @RequestParam(value = "rating", defaultValue = "0") Integer rating) {
-        if (user == null || productId == null) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Người dùng đang bị null hoặc chưa đăng nhập");
-        }
-        if (size <= 0 || page <= 0) {
-            size = 10;
-            page = 0;
-        }
-        Pageable pageable =  PageRequest.of(page,size);
-        Page<FeedbackDTO> feedbackPage = feedbackService.getFeedbacks(productId,pageable,rating);
+        try {
+            if (user == null || productId == null) {
+                return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Người dùng đang bị null hoặc chưa đăng nhập");
+            }
+            if (size <= 0 || page <= 0) {
+                size = 10;
+                page = 0;
+            }
+            Pageable pageable =  PageRequest.of(page,size);
+            Page<FeedbackDTO> feedbackPage = feedbackService.getFeedbacks(productId,pageable,rating);
 //        feedbackService.getFeedbacks()
-        return new ResponseEntity<>(feedbackPage, HttpStatus.OK);
+            return new ResponseEntity<>(feedbackPage, HttpStatus.OK);
+        } catch (Exception e) {
+            e.printStackTrace(); // Log lỗi
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(e.getMessage());
+        }
     }
 
     @GetMapping("/count-comment")

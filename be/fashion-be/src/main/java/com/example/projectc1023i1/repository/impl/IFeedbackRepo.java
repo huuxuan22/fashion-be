@@ -4,9 +4,12 @@ import com.example.projectc1023i1.model.Feedback;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,4 +40,11 @@ public interface IFeedbackRepo extends JpaRepository<Feedback, Integer> {
             "LEFT JOIN feedbacks f2 ON fmsg.feedback_id = f2.feedback_id\n" +
             "WHERE (f1.product_id = :productId OR f2.product_id = :productId)",nativeQuery = true)
     Integer countAllMediaByProductId(@Param("productId") Integer productId);
+
+    @Query(value = "select f.* from feedbacks as f where f.unique_value like :unique",nativeQuery = true)
+    Feedback findFeedbackByUnique(@Param("unique") String uniqueKey);
+    @Modifying
+    @Transactional
+    @Query("delete from Feedback where uniqueValue = :unique")
+    void deleteFeedbackByUniqueKey(@Param("unique") String uniqueKey);
 }

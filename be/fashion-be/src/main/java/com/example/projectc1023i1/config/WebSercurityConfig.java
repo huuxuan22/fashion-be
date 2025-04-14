@@ -51,7 +51,9 @@ public class WebSercurityConfig {
                 .authorizeHttpRequests((request)   -> {
 
                         request.requestMatchers(
-                                        "/ws/**","**")
+                                        "/ws/**",
+                                        "**",
+                                        "/**")
 
                                 .permitAll()
                             // phaan quyen cho user

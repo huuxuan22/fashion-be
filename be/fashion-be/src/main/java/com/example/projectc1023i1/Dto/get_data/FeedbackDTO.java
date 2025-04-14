@@ -13,12 +13,11 @@ import java.util.List;
 @Data
 @Setter
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedbackDTO {
     private Integer feedbackId;
-    private String title;
+    private  String title;
     private String content;
     private Boolean status;
     private Integer rating;

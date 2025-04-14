@@ -23,17 +23,23 @@ public class Feedback {
     private String content;
     private Boolean status;
     private Integer rating;
+    @Column(name = "unique_value")
+    private String uniqueValue; // bien de xoa khi loi trong qua trinh xu ly anh
     @Column(name = "created_at")
     private LocalDateTime createAt;
     @Column(name = "updated_at")
     private LocalDateTime updateAt;
+
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;
+
     @ManyToOne
     @JoinColumn(name = "product_id")
     private Product product;
 
+    // Thêm vào class Feedback
+    @Getter
     @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<FeedbackMessage> feedbackMessages;
 

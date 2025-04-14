@@ -8,7 +8,6 @@ import java.sql.Timestamp;
 @Data
 @Setter
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class FeedbackMessageDTO {

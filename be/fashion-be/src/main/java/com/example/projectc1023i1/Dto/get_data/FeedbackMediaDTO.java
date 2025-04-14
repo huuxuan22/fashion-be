@@ -11,7 +11,6 @@ import java.sql.Timestamp;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
 @Data
 public class FeedbackMediaDTO {
     private Long mediaId;

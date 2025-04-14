@@ -24,9 +24,7 @@ dependencies {
 
 	implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'  // Phiên bản mới nhất
 
-	// MapStruct
-	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
-	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
+
 
 
 	// cai nay de gui email xac thuc
@@ -40,6 +38,9 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+// MapStruct
+	implementation 'org.mapstruct:mapstruct:1.5.5.Final'
+	annotationProcessor 'org.mapstruct:mapstruct-processor:1.5.5.Final'
 
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	runtimeOnly 'org.springframework.boot:spring-boot-starter-tomcat'
@@ -76,14 +77,7 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-actuator'
 
-	// lam viec voi Login-with Google
-//	implementation 'org.springframework.boot:spring-boot-starter-web'
-//	implementation 'org.springframework.boot:spring-boot-starter-security'
-//	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-//	implementation 'com.google.api-client:google-api-client:1.34.2'
-//	implementation 'org.springframework.security.oauth:spring-security-oauth2-client:5.3.3'
-//	implementation 'org.springframework.security.oauth:spring-security-oauth2-jose:5.3.3'
-//	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	// lam viec voi firebae updaloa video
 
 	// Thư viện Nimbus JOSE JWT
 	implementation 'com.nimbusds:nimbus-jose-jwt:9.31'

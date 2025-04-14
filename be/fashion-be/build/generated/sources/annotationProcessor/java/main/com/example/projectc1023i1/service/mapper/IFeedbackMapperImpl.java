@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 
 @Generated(
     value = "org.mapstruct.ap.MappingProcessor",
-    date = "2025-04-12T04:43:42+0700",
+    date = "2025-04-13T21:47:46+0700",
     comments = "version: 1.5.5.Final, compiler: IncrementalProcessingEnvironment from gradle-language-java-8.10.2.jar, environment: Java 21.0.2 (Oracle Corporation)"
 )
 @Component
@@ -29,37 +29,67 @@ public class IFeedbackMapperImpl implements IFeedbackMapper {
             return null;
         }
 
-        FeedbackDTO.FeedbackDTOBuilder feedbackDTO = FeedbackDTO.builder();
+        FeedbackDTO feedbackDTO = new FeedbackDTO();
 
-        feedbackDTO.user( usersToUserSimpleDTO( feedback.getUser() ) );
-        feedbackDTO.product( productToProductSmpleDTO( feedback.getProduct() ) );
-        feedbackDTO.feedbackMessages( feedbackMessageListToFeedbackMessageDTOList( feedback.getFeedbackMessages() ) );
-        feedbackDTO.feedbackMedia( feedbackMediaListToFeedbackMediaDTOList( feedback.getFeedbackMedia() ) );
-        feedbackDTO.feedbackId( feedback.getFeedbackId() );
-        feedbackDTO.title( feedback.getTitle() );
-        feedbackDTO.content( feedback.getContent() );
-        feedbackDTO.status( feedback.getStatus() );
-        feedbackDTO.rating( feedback.getRating() );
-        feedbackDTO.createAt( feedback.getCreateAt() );
-        feedbackDTO.updateAt( feedback.getUpdateAt() );
+        feedbackDTO.setFeedbackMessages( feedbackMessageListToFeedbackMessageDTOList( feedback.getFeedbackMessages() ) );
+        feedbackDTO.setUser( toUserSimpleDTO( feedback.getUser() ) );
+        feedbackDTO.setProduct( toProductSimpleDTO( feedback.getProduct() ) );
+        feedbackDTO.setFeedbackMedia( feedbackMediaListToFeedbackMediaDTOList( feedback.getFeedbackMedia() ) );
+        feedbackDTO.setFeedbackId( feedback.getFeedbackId() );
+        feedbackDTO.setTitle( feedback.getTitle() );
+        feedbackDTO.setContent( feedback.getContent() );
+        feedbackDTO.setStatus( feedback.getStatus() );
+        feedbackDTO.setRating( feedback.getRating() );
+        feedbackDTO.setCreateAt( feedback.getCreateAt() );
+        feedbackDTO.setUpdateAt( feedback.getUpdateAt() );
 
-        return feedbackDTO.build();
+        return feedbackDTO;
     }
 
     @Override
-    public FeedbackMessageDTO toFeedbackMessageDTO(FeedbackMessage feedbackMessage) {
-        if ( feedbackMessage == null ) {
+    public FeedbackMessageDTO toFeedbackMessageDTO(FeedbackMessage message) {
+        if ( message == null ) {
             return null;
         }
 
-        FeedbackMessageDTO.FeedbackMessageDTOBuilder feedbackMessageDTO = FeedbackMessageDTO.builder();
+        FeedbackMessageDTO feedbackMessageDTO = new FeedbackMessageDTO();
 
-        feedbackMessageDTO.fbMessageId( feedbackMessage.getFbMessageId() );
-        feedbackMessageDTO.sender( feedbackMessage.getSender() );
-        feedbackMessageDTO.message( feedbackMessage.getMessage() );
-        feedbackMessageDTO.createdAt( feedbackMessage.getCreatedAt() );
+        feedbackMessageDTO.setFbMessageId( message.getFbMessageId() );
+        feedbackMessageDTO.setSender( message.getSender() );
+        feedbackMessageDTO.setMessage( message.getMessage() );
+        feedbackMessageDTO.setCreatedAt( message.getCreatedAt() );
 
-        return feedbackMessageDTO.build();
+        return feedbackMessageDTO;
+    }
+
+    @Override
+    public UserSimpleDTO toUserSimpleDTO(Users user) {
+        if ( user == null ) {
+            return null;
+        }
+
+        UserSimpleDTO userSimpleDTO = new UserSimpleDTO();
+
+        userSimpleDTO.setUserId( user.getUserId() );
+        userSimpleDTO.setImgUrl( user.getImgUrl() );
+        userSimpleDTO.setNumberphone( user.getNumberphone() );
+        userSimpleDTO.setFullName( user.getFullName() );
+
+        return userSimpleDTO;
+    }
+
+    @Override
+    public ProductSmpleDTO toProductSimpleDTO(Product product) {
+        if ( product == null ) {
+            return null;
+        }
+
+        ProductSmpleDTO productSmpleDTO = new ProductSmpleDTO();
+
+        productSmpleDTO.setProductId( product.getProductId() );
+        productSmpleDTO.setProductName( product.getProductName() );
+
+        return productSmpleDTO;
     }
 
     @Override
@@ -68,44 +98,16 @@ public class IFeedbackMapperImpl implements IFeedbackMapper {
             return null;
         }
 
-        FeedbackMediaDTO.FeedbackMediaDTOBuilder feedbackMediaDTO = FeedbackMediaDTO.builder();
+        FeedbackMediaDTO feedbackMediaDTO = new FeedbackMediaDTO();
 
-        feedbackMediaDTO.mediaId( feedbackMedia.getMediaId() );
-        feedbackMediaDTO.feedback( feedbackMedia.getFeedback() );
-        feedbackMediaDTO.fbMessage( feedbackMedia.getFbMessage() );
-        feedbackMediaDTO.mediaUrl( feedbackMedia.getMediaUrl() );
-        feedbackMediaDTO.mediaType( feedbackMedia.getMediaType() );
-        feedbackMediaDTO.createdAt( feedbackMedia.getCreatedAt() );
+        feedbackMediaDTO.setMediaId( feedbackMedia.getMediaId() );
+        feedbackMediaDTO.setFeedback( feedbackMedia.getFeedback() );
+        feedbackMediaDTO.setFbMessage( feedbackMedia.getFbMessage() );
+        feedbackMediaDTO.setMediaUrl( feedbackMedia.getMediaUrl() );
+        feedbackMediaDTO.setMediaType( feedbackMedia.getMediaType() );
+        feedbackMediaDTO.setCreatedAt( feedbackMedia.getCreatedAt() );
 
-        return feedbackMediaDTO.build();
-    }
-
-    protected UserSimpleDTO usersToUserSimpleDTO(Users users) {
-        if ( users == null ) {
-            return null;
-        }
-
-        UserSimpleDTO.UserSimpleDTOBuilder userSimpleDTO = UserSimpleDTO.builder();
-
-        userSimpleDTO.userId( users.getUserId() );
-        userSimpleDTO.imgUrl( users.getImgUrl() );
-        userSimpleDTO.numberphone( users.getNumberphone() );
-        userSimpleDTO.fullName( users.getFullName() );
-
-        return userSimpleDTO.build();
-    }
-
-    protected ProductSmpleDTO productToProductSmpleDTO(Product product) {
-        if ( product == null ) {
-            return null;
-        }
-
-        ProductSmpleDTO.ProductSmpleDTOBuilder productSmpleDTO = ProductSmpleDTO.builder();
-
-        productSmpleDTO.productId( product.getProductId() );
-        productSmpleDTO.productName( product.getProductName() );
-
-        return productSmpleDTO.build();
+        return feedbackMediaDTO;
     }
 
     protected List<FeedbackMessageDTO> feedbackMessageListToFeedbackMessageDTOList(List<FeedbackMessage> list) {

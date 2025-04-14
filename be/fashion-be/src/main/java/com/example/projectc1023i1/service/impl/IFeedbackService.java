@@ -5,6 +5,7 @@ import com.example.projectc1023i1.Dto.get_data.FeedbackDTO;
 import com.example.projectc1023i1.model.Feedback;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -13,4 +14,7 @@ public interface IFeedbackService {
     List<CountComment> coutComment(Integer ProductId);
     Integer getAllComment(Integer ProductId);
     Integer getAllMedia(Integer ProductId);
+    void save(Feedback feedback);
+    void uploadMediaComment (List<MultipartFile> files,String ProductId);
+
 }
