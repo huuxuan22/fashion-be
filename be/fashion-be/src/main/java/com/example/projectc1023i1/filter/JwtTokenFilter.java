@@ -112,6 +112,8 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     org.modelmapper.internal.Pair.of("/api/login","POST"),
                     org.modelmapper.internal.Pair.of("/api/register","PUT"),
                     org.modelmapper.internal.Pair.of("/api/send","POST"),
+                        org.modelmapper.internal.Pair.of("/api/comment/","GET"),
+
                         org.modelmapper.internal.Pair.of("/api/save","POST"),
                         org.modelmapper.internal.Pair.of("/api/send-again","POST"),
                         org.modelmapper.internal.Pair.of("/image/product","GET"),

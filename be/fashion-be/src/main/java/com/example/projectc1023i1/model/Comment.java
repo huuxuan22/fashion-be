@@ -14,5 +14,5 @@ public class Comment {
     private String sender;
     private String comment;
     private String unique;
-
+    private Integer rating;
 }

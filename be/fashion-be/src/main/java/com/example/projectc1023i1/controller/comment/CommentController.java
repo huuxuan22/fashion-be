@@ -1,9 +1,13 @@
 package com.example.projectc1023i1.controller.comment;
 
+import com.example.projectc1023i1.Dto.FeedbackMessDTO;
+import com.example.projectc1023i1.Dto.get_data.FeedbackMessageDTO;
 import com.example.projectc1023i1.Exception.UserExepion;
 import com.example.projectc1023i1.model.Comment;
 import com.example.projectc1023i1.model.Feedback;
+import com.example.projectc1023i1.model.FeedbackMessage;
 import com.example.projectc1023i1.model.TypingEvent;
+import com.example.projectc1023i1.service.impl.IFeedbackMessService;
 import com.example.projectc1023i1.service.impl.IFeedbackService;
 import com.example.projectc1023i1.service.impl.IProductService;
 import com.example.projectc1023i1.service.impl.IUserService;
@@ -15,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.stereotype.Controller;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 @Controller
@@ -25,6 +30,8 @@ public class CommentController {
     private IProductService productService;
     @Autowired
     private IUserService userService;
+    @Autowired
+    private IFeedbackMessService feedbackMessService;
     private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
     @MessageMapping("/comments")
     @SendTo("/topic/comments")
@@ -33,7 +40,7 @@ public class CommentController {
         feedbackService.save(Feedback.builder()
                         .content(comment.getComment())
                         .title("binh luan")
-                        .rating(5)
+                        .rating(comment.getRating())
                         .product(productService.getProductById(Integer.valueOf(comment.getProductId())))
                         .user(userService.findUserById(Integer.valueOf(comment.getSender())))
                         .uniqueValue(unique)
@@ -47,18 +54,21 @@ public class CommentController {
     }
 
 
-
-    @MessageMapping("/comment/upload/{productId}")
-    public void handleFileUpload(
-            @DestinationVariable String productId,
-            @Payload byte[] fileData,
-            @Header("fileName") String fileName,
-            @Header("simpSessionId") String sessionId
-    ) {
-        // Xử lý file ảnh
-        // Lưu file và trả về URL
+    @MessageMapping("/response")
+    @SendTo("/topic/comments")
+    public FeedbackMessDTO handleSendResponeMessage (FeedbackMessDTO feedbackMessDTO) throws UserExepion {
+        String unique = UniqueCodeGenerator.generateUniqueCode();
+        Feedback feedbackFind = feedbackService.findById(feedbackMessDTO.getFeedbackId());
+        feedbackMessService.saveFeedbackMessage(FeedbackMessage.builder()
+                        .sender(userService.findUserById(feedbackMessDTO.getSender()))
+                        .message(feedbackMessDTO.getMessage())
+                        .createdAt(Timestamp.valueOf(LocalDateTime.now()))
+                        .uniqueValue(unique)
+                        .feedback(feedbackFind)
+                .build());
+        feedbackMessDTO.setUnique(unique);
+        return feedbackMessDTO;
     }
-
 
     // Xử lý sự kiện typing
     @MessageMapping("/typing")

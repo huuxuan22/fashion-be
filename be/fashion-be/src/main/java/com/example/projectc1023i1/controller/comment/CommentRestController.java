@@ -2,6 +2,7 @@ package com.example.projectc1023i1.controller.comment;
 
 import com.example.projectc1023i1.Dto.get_data.FormData;
 import com.example.projectc1023i1.model.Users;
+import com.example.projectc1023i1.service.impl.IFeedbackMessService;
 import com.example.projectc1023i1.service.impl.IFeedbackService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,7 +28,8 @@ public class CommentRestController {
     @Value("${file.upload-dir}")
     private String uploadDir;
 
-
+    @Autowired
+    private IFeedbackMessService feedbackMessService;
     @PostMapping(value = "upload-image-feedback", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> uploadImages(@AuthenticationPrincipal Users users,
                                           @RequestParam("unique") String unique ,
@@ -41,9 +43,17 @@ public class CommentRestController {
         return ResponseEntity.ok("success");
     }
 
-    @PostMapping( "")
-    public ResponseEntity<?> getImage(@AuthenticationPrincipal Users users,
-                                          @RequestParam("link") String link
+    @PostMapping(value = "upload-mess-media", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> uploadMessMedia(@AuthenticationPrincipal Users users,
+                                             @RequestParam("unique") String unique,
+                                             @RequestPart("files") List<MultipartFile> files) {
+        feedbackMessService.saveFeedbackImageMessRespone(files,unique);
+        return ResponseEntity.ok("success");
+    }
+
+    @GetMapping( "media")
+    public ResponseEntity<?> getImage(
+            @RequestParam("link") String link
     ) throws IOException {
         try {
             Path filePath = Paths.get(uploadDir).resolve(link).normalize();
@@ -62,8 +72,9 @@ public class CommentRestController {
                     .body(fileBytes);
 
         } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("e.getMessage()");
         }
     }
+
 
 }

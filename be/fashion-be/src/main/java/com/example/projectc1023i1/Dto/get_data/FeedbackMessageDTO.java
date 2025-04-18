@@ -1,9 +1,11 @@
 package com.example.projectc1023i1.Dto.get_data;
 
+import com.example.projectc1023i1.model.Feedback;
 import com.example.projectc1023i1.model.Users;
 import lombok.*;
 
 import java.sql.Timestamp;
+import java.util.List;
 
 @Data
 @Setter

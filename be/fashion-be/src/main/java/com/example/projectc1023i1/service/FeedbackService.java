@@ -50,7 +50,7 @@ public class FeedbackService implements IFeedbackService {
     public Page<FeedbackDTO> getFeedbacks(Integer productId, Pageable pageable,Integer rating) {
         Page<Feedback> feedbackPage = null;
         if (rating <= 0) {
-            feedbackPage = feedbackRepo.findAllByProductId(productId, pageable);
+            feedbackPage =  feedbackRepo.findAllByProductId(productId, pageable);
         }else  {
             feedbackPage = feedbackRepo.findAllByProductIdAndRatings(productId, rating,pageable);
         }
@@ -83,8 +83,8 @@ public class FeedbackService implements IFeedbackService {
 
         for (MultipartFile file : files) {
             try {
-                String contentType = file.getContentType();
-                String originalName = file.getOriginalFilename();
+                String contentType = file.getContentType(); // tra ve kieu file
+                String originalName = file.getOriginalFilename(); // tra ve ten goc cua file
 
                 // ✅ Kiểm tra định dạng
                 if (!isSupportedContentType(contentType) || !isSupportedExtension(originalName)) {
@@ -108,7 +108,7 @@ public class FeedbackService implements IFeedbackService {
                 Files.createDirectories(storagePath);
 
                 Path filePath = storagePath.resolve(fileName);
-                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+                Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING); // neu file da ton tai ghi de file cu
 
                 // ✅ Tạo đường dẫn URL để lưu vào DB
                 String fileUrl = String.format( folder+"/"+ fileName);
@@ -118,6 +118,7 @@ public class FeedbackService implements IFeedbackService {
                         .fbMessage(null)
                         .mediaType("image")
                         .mediaUrl(fileUrl)
+
                         .createdAt(Timestamp.valueOf(LocalDateTime.now()))
                         .build();
                 feedbackMediaRepo.save(feedbackMedia);
@@ -127,6 +128,43 @@ public class FeedbackService implements IFeedbackService {
                 e.printStackTrace();
             }
         }
+    }
+
+    @Override
+    public Feedback findById(Integer id) {
+        return feedbackRepo.findById(id).orElse(null);
+    }
+
+    @Override
+    public Integer getTotalPage(Integer productId,Integer rating) {
+        if (rating == 0 ){
+            Integer totalPage = feedbackRepo.getTotalPage(productId);
+            if (totalPage == null) {
+                return 0;
+            }else if (totalPage % 15 == 0) {
+                return totalPage / 15;
+            }else {
+                return totalPage/15 + 1;
+            }
+        }else {
+            Integer totalPage  = feedbackRepo.getTotalPageByRating(productId,rating);
+            if (totalPage == null) {
+                return 0;
+            }else if (totalPage % 15 == 0) {
+                return totalPage / 15;
+            }else {
+                return totalPage/15 + 1;
+            }
+        }
+    }
+
+    @Override
+    public Double getAverageRating(Integer productId) {
+        Double averageRating = feedbackRepo.getAverageRating(productId);
+        if (averageRating == null) {
+            return 5.0;
+        }
+        return averageRating;
     }
 
     private boolean isSupportedContentType(String contentType) {

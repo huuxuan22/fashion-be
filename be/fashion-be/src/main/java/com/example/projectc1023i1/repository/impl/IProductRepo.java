@@ -58,5 +58,6 @@ public interface IProductRepo extends JpaRepository<Product, Integer> {
     List<String> searchProducts(@Param("param") String param);
     @Query("select  count(p) from Product p")
     Integer countProduct();
-
+    @Query("select count(*) from Feedback where product.productId = :productId")
+    Integer getTotalPage(@Param("productId") Integer productId);
 }

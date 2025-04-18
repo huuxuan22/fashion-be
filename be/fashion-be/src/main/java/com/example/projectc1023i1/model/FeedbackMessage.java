@@ -6,6 +6,7 @@ import lombok.*;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 @Setter
 @Getter
@@ -34,6 +35,9 @@ public class FeedbackMessage {
     @Column(name = "created_at")
     private Timestamp createdAt;
 
+    @Column(name = "unique_value")
+    private String uniqueValue;
+
     @OneToMany(mappedBy = "fbMessage", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<FeedbackMedia> feedbackMedia;
+    private Set<FeedbackMedia> feedbackMedia;
 }

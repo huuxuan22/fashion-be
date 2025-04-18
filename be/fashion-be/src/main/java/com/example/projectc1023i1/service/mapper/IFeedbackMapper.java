@@ -20,4 +20,5 @@ public interface IFeedbackMapper {
     default Page<FeedbackDTO> toFeedbackDTOPage(Page<Feedback> feedbackPage) {
         return feedbackPage.map(this::toFeedbackDTO);
     }
+
 }

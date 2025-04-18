@@ -3,6 +3,7 @@ package com.example.projectc1023i1.repository.impl;
 import com.example.projectc1023i1.model.Feedback;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -15,12 +16,14 @@ import java.util.List;
 
 @Repository
 public interface IFeedbackRepo extends JpaRepository<Feedback, Integer> {
+    @Query("SELECT  f FROM Feedback f WHERE f.product.productId = :productId ")
+    Page<Feedback> findAllByProductId(
+            @Param("productId") Integer productId,
+            Pageable pageable
+    );
 
-    @Query("select f from Feedback f where f.product.productId = :productId ")
-    Page<Feedback> findAllByProductId(@Param("productId") Integer productId,
-                                      Pageable pageable);
 
-    @Query("select f from Feedback f where f.product.productId = :productId and f.rating = :rating")
+    @Query("select f from Feedback f where f.product.productId = :productId and f.rating = :rating ")
     Page<Feedback> findAllByProductIdAndRatings(@Param("productId") Integer productId,
                                                 @Param("rating") Integer rating,Pageable pageable);
 
@@ -47,4 +50,15 @@ public interface IFeedbackRepo extends JpaRepository<Feedback, Integer> {
     @Transactional
     @Query("delete from Feedback where uniqueValue = :unique")
     void deleteFeedbackByUniqueKey(@Param("unique") String uniqueKey);
+    @Query("select count(*) from Feedback where product.productId = :productId ")
+    Integer getTotalPage(@Param("productId") Integer productId);
+
+    @Query("select count(*) from Feedback where product.productId = :productId and rating = :rating")
+    Integer getTotalPageByRating(@Param("productId") Integer productId, @Param("rating") Integer rating);
+    @Query( value = "select sum(rating * count) / sum(count) AS average_rating\n" +
+            "from (select rating, COUNT(*) AS count from feedbacks\n" +
+            "\twhere product_id = :productId\n" +
+            "    group by  rating\n" +
+            ") as rating_counts",nativeQuery = true)
+    Double getAverageRating (@Param("productId") Integer productId);
 }

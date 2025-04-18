@@ -1,11 +1,13 @@
 package com.example.projectc1023i1.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Setter
@@ -39,11 +41,12 @@ public class Feedback {
     private Product product;
 
     // Thêm vào class Feedback
-    @Getter
     @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<FeedbackMessage> feedbackMessages;
 
     @OneToMany(mappedBy = "feedback", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<FeedbackMedia> feedbackMedia;
 
 }
