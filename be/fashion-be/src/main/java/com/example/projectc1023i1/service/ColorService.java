@@ -32,4 +32,9 @@ public class ColorService implements IColorService {
     public void delete(Integer id) {
         colorRepository.deleteById(id);
     }
+
+    @Override
+    public List<Color> getAllColorOfOneProduct(Integer productId) {
+        return colorRepository.getAllColorOfOneProduct(productId);
+    }
 }

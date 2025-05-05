@@ -3,14 +3,12 @@ package com.example.projectc1023i1.repository.impl;
 import com.example.projectc1023i1.model.Feedback;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -61,4 +59,7 @@ public interface IFeedbackRepo extends JpaRepository<Feedback, Integer> {
             "    group by  rating\n" +
             ") as rating_counts",nativeQuery = true)
     Double getAverageRating (@Param("productId") Integer productId);
+
+    @Query("select count(f) from Feedback f where f.product.productId = :productId")
+    Integer getAllRatingByProductId(@Param("productId") Integer productId);
 }

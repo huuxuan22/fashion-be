@@ -15,10 +15,8 @@ public class OrderDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_detail_id")
     private Integer orderDetailsId;
-
     private Integer quality;
     private Double price;
-
     @ManyToOne
     @JoinColumn(name = "order_id")
     private Order order;

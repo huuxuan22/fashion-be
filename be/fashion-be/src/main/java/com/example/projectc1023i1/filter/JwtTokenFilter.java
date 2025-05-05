@@ -99,6 +99,9 @@ public class JwtTokenFilter extends OncePerRequestFilter {
         private boolean isByPassToken(@NonNull HttpServletRequest request) {
 
                 final List<Pair<String, String >> bypassTokens = Arrays.asList(
+                        org.modelmapper.internal.Pair.of("/image/product","GET"),
+                        org.modelmapper.internal.Pair.of("/image/deal","GET"),
+
                     org.modelmapper.internal.Pair.of("/api/categories/getAll","GET"),
                     org.modelmapper.internal.Pair.of("/api/categories","GET"),
                     org.modelmapper.internal.Pair.of("/api/auth/google","POST"),
@@ -113,10 +116,10 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                     org.modelmapper.internal.Pair.of("/api/register","PUT"),
                     org.modelmapper.internal.Pair.of("/api/send","POST"),
                         org.modelmapper.internal.Pair.of("/api/comment/","GET"),
-
                         org.modelmapper.internal.Pair.of("/api/save","POST"),
                         org.modelmapper.internal.Pair.of("/api/send-again","POST"),
-                        org.modelmapper.internal.Pair.of("/image/product","GET"),
+                        org.modelmapper.internal.Pair.of("/api/payment/create-payment","GET"),
+                        org.modelmapper.internal.Pair.of("/api/payment/payment_info","GET"),
                         org.modelmapper.internal.Pair.of("/ws","GET"),
                         org.modelmapper.internal.Pair.of("/ws/","GET"),
                         org.modelmapper.internal.Pair.of("/ws/**","GET")

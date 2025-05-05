@@ -10,4 +10,6 @@ public interface IColorService {
     Color getColor(Integer id);
     Color save(Color color);
     void delete(Integer id);
+    List<Color> getAllColorOfOneProduct(Integer productId);
+
 }

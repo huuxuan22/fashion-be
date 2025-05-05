@@ -35,7 +35,7 @@ public class CommentController {
     private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
     @MessageMapping("/comments")
     @SendTo("/topic/comments")
-    public Comment handleFeedbackWithAttachments( Comment comment) throws UserExepion {
+    public Comment handleFeedbackWithAttachments(Comment comment) throws UserExepion {
         String unique = UniqueCodeGenerator.generateUniqueCode();
         feedbackService.save(Feedback.builder()
                         .content(comment.getComment())

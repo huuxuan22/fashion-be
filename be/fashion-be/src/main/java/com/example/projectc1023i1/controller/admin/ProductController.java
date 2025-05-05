@@ -9,6 +9,7 @@ import com.example.projectc1023i1.respone.errorsValidate.ImageErrorsRespone;
 import com.example.projectc1023i1.respone.errorsValidate.ProductErrorsRespone;
 import com.example.projectc1023i1.respone.errorsValidate.ProductMorphologyErrors;
 import com.example.projectc1023i1.respone.errorsValidate.ProductUpdateErrorsRespone;
+import com.example.projectc1023i1.service.FeedbackService;
 import com.example.projectc1023i1.service.ProductService;
 import com.example.projectc1023i1.service.impl.IImageService;
 import com.example.projectc1023i1.service.impl.IProductService;
@@ -54,6 +55,8 @@ public class ProductController {
     private IImageService imageService;
     @Autowired
     private IProductVariantService productVariantService;
+    @Autowired
+    private FeedbackService feedbackService;
 
     /**
      * Lấy tất cả sản phẩm
@@ -388,5 +391,144 @@ public class ProductController {
     public ResponseEntity<?> discountProduct(@AuthenticationPrincipal Users userss) {
         return ResponseEntity.status(HttpStatus.OK).body(productService.getDiscountProduct());
     }
+
+    /**
+     * tim kiem san pham trong quan ly admin
+     * @param user
+     * @param size
+     * @param page
+     * @param search
+     * @param categoryId
+     * @return
+     */
+    @GetMapping("search-product")
+    public ResponseEntity<?> SearchProduct(@AuthenticationPrincipal Users user
+            , @RequestParam("size") int size
+            , @RequestParam("page") int page
+            , @RequestParam("search") String search
+            , @RequestParam("categoryId") Integer categoryId
+    ) {
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Người dùng đang bị null hoặc chưa đăng nhập");
+        }
+        if (size <= 0 || page <= 0) {
+            size = 10;
+            page = 0;
+        }
+        Pageable pageable =  PageRequest.of(page,size);
+        Page<Product> page1 = productService.getAllProducts(pageable,search.trim(),categoryId);
+        return ResponseEntity.ok(page1);
+    }
+
+    /**
+     * tim kiem san pham search trong component search
+     * @param user
+     * @param value
+     * @param page
+     * @param size
+     * @return
+     */
+    @GetMapping("search")
+    public ResponseEntity<?> searchProductByValue(@AuthenticationPrincipal Users user,
+                                                  @RequestParam("value") String value,
+                                                  @RequestParam("page") Integer page,
+                                                  @RequestParam("size") Integer size) {
+        Pageable pageable =  PageRequest.of(page,size);
+        Page<Product> products  = productService.findProductByValue(value,pageable);
+        return ResponseEntity.ok(products);
+    }
+    @GetMapping("totalPage")
+    public ResponseEntity<?> getAllTotalPage(@AuthenticationPrincipal Users users,
+                                             @RequestParam("value") String value) {
+        return ResponseEntity.ok(productService.getAllPageProductByValue(value));
+    }
+
+    /**
+     * lay 10 san pham noi bat
+     * @param users
+     * @return
+     */
+    @GetMapping("standOut")
+    public ResponseEntity<?> getProductStandOut(@AuthenticationPrincipal Users users) {
+        return ResponseEntity.ok(productService.getProduct10());
+    }
+
+    /**
+     * lay tat ca hinh anh san pham
+     * @param users
+     * @param productId
+     * @return
+     */
+    @GetMapping("/image")
+    public ResponseEntity<?> getAllImageProduct (@AuthenticationPrincipal Users users,
+                                                 @RequestParam("productId") Integer productId) {
+        List<Image> imageList = imageService.getAllImagesByProductId(productId);
+        return ResponseEntity.ok(imageList);
+    }
+
+    /**
+     * lay product ra de tien hanh thanh toan
+     * @param users
+     * @param productId
+     * @return
+     */
+    @GetMapping("/detail")
+    public ResponseEntity<?> getDetailProduct (@AuthenticationPrincipal Users users,
+                                               @RequestParam("productId") Integer productId) {
+        Product product = productService.getProductById(productId);
+        return ResponseEntity.ok(product);
+    }
+
+    /**
+     * lay so luong san pham da basn
+     * @param users
+     * @param productId
+     * @return
+     */
+    @GetMapping("/solid")
+    public ResponseEntity<?> getSolidOfProduct(@AuthenticationPrincipal Users users,
+                                               @RequestParam("productId") Integer productId) {
+        return ResponseEntity.ok(productVariantService.getSoldOfProduct(productId));
+    }
+
+    /**
+     * lấy những sản phẩm cofnlaij theo màu sắc khi cái nào hét rồi trả về 0 ddeer hiển thị dữ liệu cho người dugnf xem
+     * @param users
+     * @param productId
+     * @param colorId
+     * @return
+     */
+    @GetMapping("/select-color")
+    public ResponseEntity<?> countQuanlityWithSizeByColorId (@AuthenticationPrincipal Users users,
+                                                             @RequestParam("productId") Integer productId,
+                                                             @RequestParam("colorId") Integer colorId) {
+        return ResponseEntity.ok(productVariantService.countQuanlityWithSizeByColorId(productId, colorId));
+    }
+
+    @GetMapping("/same")
+    public ResponseEntity<?> getSameProduct(@AuthenticationPrincipal Users users,
+                                            @RequestParam("subCategoryId") Integer subCategoryId,
+                                            @RequestParam("productId") Integer productId) {
+        return ResponseEntity.ok(productService.getSameProduct(subCategoryId,productId));
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<?> getAllRatingByProductId(@AuthenticationPrincipal Users users,
+                                            @RequestParam("productId") Integer productId) {
+        return ResponseEntity.ok(feedbackService.getAllRatingByProductId(productId));
+    }
+
+    @GetMapping("/top-deal")
+    public ResponseEntity<?> getTopDealProduct(@AuthenticationPrincipal Users users) {
+        return ResponseEntity.ok(productService.findAdd12());
+    }
+
+    @GetMapping("/searchByName")
+    public ResponseEntity<?> searchByName(@AuthenticationPrincipal Users users,
+                                          @RequestParam("value") String value) {
+
+        return ResponseEntity.ok(productService.findAllByProductName(value));
+    }
+
 
 }

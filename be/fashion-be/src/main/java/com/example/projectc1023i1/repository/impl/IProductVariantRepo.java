@@ -1,5 +1,6 @@
 package com.example.projectc1023i1.repository.impl;
 
+import com.example.projectc1023i1.Dto.get_data.CountByQualitySize;
 import com.example.projectc1023i1.model.Color;
 import com.example.projectc1023i1.model.Product;
 import com.example.projectc1023i1.model.ProductVariant;
@@ -39,4 +40,24 @@ public interface IProductVariantRepo extends JpaRepository<ProductVariant, Integ
     @Query("SELECT p FROM ProductVariant p WHERE p.product.productId = :productId")
     Page<ProductVariant> findByProductId(@Param("productId") Integer productId, Pageable pageable);
 
+    /**
+     * lay so luong san pham da ban
+     * @param productId
+     * @return
+     */
+    @Query(value = "select count(pv.product_id) as sold from product_variants as pv\n" +
+            "inner join order_details as od on od.product_variant_id = pv.product_variant_id \n" +
+            "inner join `order` as o on o.order_id = od.order_id\n" +
+            "where product_id = :productId and o.status = true",nativeQuery = true)
+    Integer getSoldOfProduct(@Param("productId") Integer productId);
+
+    @Query("select pv.size, pv.stock from ProductVariant pv where pv.product.productId = :productId and pv.color.colorId = :colorId")
+    List<CountByQualitySize> countQuanlityWithSizeByColorId(@Param("productId") Integer productId, @Param("colorId") Integer colorId);
+
+    @Query("select pv from ProductVariant pv where pv.size.sizeId = :sizeId and pv.color.colorId = :colorId and pv.product.productId = :productId")
+    ProductVariant findQuanlityByProductIdAndSizeIdAndColorId(
+            @Param("productId") Integer productId,
+            @Param("sizeId") Integer sizeId,
+            @Param("colorId") Integer colorId
+    );
 }

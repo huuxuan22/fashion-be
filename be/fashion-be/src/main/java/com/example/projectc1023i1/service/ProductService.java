@@ -190,4 +190,43 @@ public class ProductService implements IProductService {
     public List<Product> getDiscountProduct() {
         return productRepo.getDiscountProduct();
     }
+
+    @Override
+    public Page<Product> findProductByValue(String value, Pageable pageable) {
+        return productRepo.findByName(value,pageable);
+    }
+
+    @Override
+    public Integer getAllPageProductByValue(String value) {
+        Integer pageTotal = productRepo.countAllByProductName(value);
+        if (pageTotal % 10 == 0) {
+            return pageTotal/10;
+        }else {
+            return pageTotal/10+1;
+        }
+    }
+
+    @Override
+    public List<Product> getProduct10() {
+        return productRepo.findAll10();
+    }
+
+    @Override
+    public List<Product> getSameProduct(Integer subCategoryId,Integer productId) {
+        return productRepo.findAllByProductName(subCategoryId,productId);
+    }
+
+    /**
+     * day la top deal san pham
+     * @return
+     */
+    @Override
+    public List<Product> findAdd12() {
+        return productRepo.findAll12();
+    }
+
+    @Override
+    public List<Product> findAllByProductName(String productName) {
+        return productRepo.findAllByProductName(productName);
+    }
 }

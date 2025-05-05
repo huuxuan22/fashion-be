@@ -72,7 +72,7 @@ public class WebSercurityConfig {
             @Override
             public void customize(CorsConfigurer<HttpSecurity> httpSecurityCorsConfigurer) {
                 CorsConfiguration configuration = new CorsConfiguration();
-                configuration.setAllowedOrigins(List.of("http://localhost:3000")); // frontend URL cụ thể
+                configuration.setAllowedOrigins(List.of("http://localhost:3000/")); // frontend URL cụ thể
                 configuration.setAllowCredentials(true); // ✅ BẮT BUỘC khi dùng credentials
                 // cho phép tất cả domain gửi yêu cầu
                 configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT","PATCH", "DELETE", "OPTIONS"));

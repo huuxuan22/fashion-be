@@ -167,6 +167,11 @@ public class FeedbackService implements IFeedbackService {
         return averageRating;
     }
 
+    @Override
+    public Integer getAllRatingByProductId(Integer productId) {
+        return feedbackRepo.getAllRatingByProductId(productId);
+    }
+
     private boolean isSupportedContentType(String contentType) {
         return contentType != null && (
                 contentType.equals("image/jpeg") ||

@@ -60,4 +60,18 @@ public interface IProductRepo extends JpaRepository<Product, Integer> {
     Integer countProduct();
     @Query("select count(*) from Feedback where product.productId = :productId")
     Integer getTotalPage(@Param("productId") Integer productId);
+    @Query("select p from  Product p where p.productName like concat('%',:value,'%') ")
+    Page<Product> findByName(@Param("value") String value,Pageable pageable);
+    @Query("select count(p) from  Product p where p.productName like concat('%',:value,'%') ")
+    Integer countAllByProductName(@Param("value") String productName);
+
+    @Query("select p from Product p order by p.createdAt desc limit 10")
+    List<Product> findAll10();
+
+    @Query("select p from Product p where p.categories.subCategoryId = :subCateId and p.productId != :productId")
+    List<Product> findAllByProductName(@Param("subCateId") Integer subCateId, @Param("productId") Integer productId);
+    @Query("select p from Product p where p.productName like concat('%',:productName, '%') ")
+    List<Product> findAllByProductName(@Param("productName") String productName);
+    @Query("select p from  Product p order by p.price asc limit 12")
+    List<Product> findAll12();
 }

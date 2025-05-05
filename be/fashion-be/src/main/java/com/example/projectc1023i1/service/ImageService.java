@@ -17,8 +17,8 @@ public class ImageService implements IImageService {
     @Autowired
     private IProductRepo productRepo;
     @Override
-    public List<Image> getAllImagesById(Integer id) {
-        return List.of();
+    public List<Image> getAllImagesByProductId(Integer productId) {
+        return imageRepo.findAllByProductId(productId);
     }
 
     @Override

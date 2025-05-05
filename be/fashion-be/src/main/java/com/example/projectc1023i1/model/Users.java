@@ -18,6 +18,7 @@ import java.util.List;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 @Table(name = "users")
 public class Users implements UserDetails { // ddaay laf class lay ra thong tin cua nguoi dung

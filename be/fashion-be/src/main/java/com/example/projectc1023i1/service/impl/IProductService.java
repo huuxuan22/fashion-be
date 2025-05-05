@@ -8,6 +8,7 @@ import com.example.projectc1023i1.model.Product;
 import com.example.projectc1023i1.model.ProductVariant;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,4 +28,10 @@ public interface IProductService {
     List<String>  findAllProductByValue(String value);
     Long countProduct();
     List<Product> getDiscountProduct();
+    Page<Product> findProductByValue(String value,Pageable pageable);
+    Integer getAllPageProductByValue(String value);
+    List<Product> getProduct10();
+    List<Product> getSameProduct(Integer subCategoryId,Integer productId);
+    List<Product> findAdd12();
+    List<Product> findAllByProductName( String productName);
 }

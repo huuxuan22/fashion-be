@@ -5,6 +5,7 @@ import lombok.*;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -49,6 +50,7 @@ public class Product {
     @ManyToOne
     @JoinColumn(name = "sub_cate_id")
     private SubCategories categories;
+
 
     @PrePersist
     public void prePersist() {

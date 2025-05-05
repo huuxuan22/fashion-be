@@ -1,34 +1,35 @@
 package com.example.projectc1023i1.controller.admin;
 
+import com.example.projectc1023i1.Dto.DealDTO;
 import com.example.projectc1023i1.Dto.EmployeeDTO;
 import com.example.projectc1023i1.Exception.DataNotFoundException;
 import com.example.projectc1023i1.Exception.UserExepion;
-import com.example.projectc1023i1.model.AddressUser;
-import com.example.projectc1023i1.model.CategoryEmployeeeDetail;
-import com.example.projectc1023i1.model.Roles;
-import com.example.projectc1023i1.model.Users;
+import com.example.projectc1023i1.model.*;
 import com.example.projectc1023i1.request.GetInforEmployeeUpdate;
 import com.example.projectc1023i1.request.UploadImageEmployee;
 import com.example.projectc1023i1.respone.UserRespone;
 import com.example.projectc1023i1.respone.errorsValidate.EmployeeErrorsRespone;
-import com.example.projectc1023i1.service.impl.IAddressUserService;
-import com.example.projectc1023i1.service.impl.ICEmployeeDetailService;
-import com.example.projectc1023i1.service.impl.ICategoryEmployeeService;
-import com.example.projectc1023i1.service.impl.IUserService;
+import com.example.projectc1023i1.service.impl.*;
 import jakarta.validation.Valid;
 import org.apache.http.HttpStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -48,6 +49,9 @@ public class AdminController {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private IDealService dealService;
 
     /**
      *
@@ -93,120 +97,120 @@ public class AdminController {
         return ResponseEntity.ok(categoryEmployeeService.getAllCategoriesEmployee());
     }
 
-    @PostMapping("/add-new-employee")
-    public ResponseEntity<?> addNewEmployee(
-            @Valid @RequestBody EmployeeDTO employee,
-            BindingResult bindingResult,
-            HttpRequest request)
-            throws IOException, UserExepion {
-        EmployeeErrorsRespone combinedErrors = new EmployeeErrorsRespone();
-        if (bindingResult.hasErrors()) {
-            bindingResult.getFieldErrors().forEach(fieldError -> {
-                String errorMessage = fieldError.getDefaultMessage();
-                switch (fieldError.getField()) {
-                    case "fullName":
-                        combinedErrors.setFullName((combinedErrors.getFullName() != null ? combinedErrors.getFullName() + "," : "") + errorMessage);
-                        break;
-                    case "imgUrl":
-                        combinedErrors.setImgUrl((combinedErrors.getImgUrl() != null ? combinedErrors.getImgUrl() + "," : "") + errorMessage);
-                        break;
-                    case "age":
-                        combinedErrors.setAge((combinedErrors.getAge() != null ? combinedErrors.getAge() + "," : "") + errorMessage);
-                        break;
-                    case "gender":
-                        combinedErrors.setGender((combinedErrors.getGender() != null ? combinedErrors.getGender() + "," : "") + errorMessage);
-                        break;
-                    case "numberphone":
-                        combinedErrors.setNumberphone((combinedErrors.getNumberphone() != null ? combinedErrors.getNumberphone() + "," : "") + errorMessage);
-                        break;
-                    case "birthday":
-                        combinedErrors.setBirthday((combinedErrors.getBirthday() != null ? combinedErrors.getBirthday() + "," : "") + errorMessage);
-                        break;
-                    case "email":
-                        combinedErrors.setEmail((combinedErrors.getEmail() != null ? combinedErrors.getEmail() + "," : "") + errorMessage);
-                        break;
+//    @PostMapping("/add-new-employee")
+//    public ResponseEntity<?> addNewEmployee(
+//            @Valid @RequestBody EmployeeDTO employee,
+//            BindingResult bindingResult,
+//            HttpRequest request)
+//            throws IOException, UserExepion {
+//        EmployeeErrorsRespone combinedErrors = new EmployeeErrorsRespone();
+//        if (bindingResult.hasErrors()) {
+//            bindingResult.getFieldErrors().forEach(fieldError -> {
+//                String errorMessage = fieldError.getDefaultMessage();
+//                switch (fieldError.getField()) {
+//                    case "fullName":
+//                        combinedErrors.setFullName((combinedErrors.getFullName() != null ? combinedErrors.getFullName() + "," : "") + errorMessage);
+//                        break;
+//                    case "imgUrl":
+//                        combinedErrors.setImgUrl((combinedErrors.getImgUrl() != null ? combinedErrors.getImgUrl() + "," : "") + errorMessage);
+//                        break;
+//                    case "age":
+//                        combinedErrors.setAge((combinedErrors.getAge() != null ? combinedErrors.getAge() + "," : "") + errorMessage);
+//                        break;
+//                    case "gender":
+//                        combinedErrors.setGender((combinedErrors.getGender() != null ? combinedErrors.getGender() + "," : "") + errorMessage);
+//                        break;
+//                    case "numberphone":
+//                        combinedErrors.setNumberphone((combinedErrors.getNumberphone() != null ? combinedErrors.getNumberphone() + "," : "") + errorMessage);
+//                        break;
+//                    case "birthday":
+//                        combinedErrors.setBirthday((combinedErrors.getBirthday() != null ? combinedErrors.getBirthday() + "," : "") + errorMessage);
+//                        break;
+//                    case "email":
+//                        combinedErrors.setEmail((combinedErrors.getEmail() != null ? combinedErrors.getEmail() + "," : "") + errorMessage);
+//                        break;
+//
+//                    default:
+//                        break;
+//                }
+//            });
+//            return  ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(combinedErrors);
+//        }
+//
+//        AddressUser addressUser = new AddressUser();
+//        Users users = userService.ConvertEmployeeDtoToUser(employee);
+//        users.setRole(Roles.builder().roleId(1).roleName("EMPLOYEE").build());
+//        users.setUsername(employee.getNumberphone());
+//        users.setPassword(passwordEncoder.encode("nhanvien123"));
+//        users.setIsActive(true);
+////        if (employee.get)
+//        userService.saveUser(users);
+////        int id  = userService.f
+//        Optional<Users> user = Optional.ofNullable(userService.findByNumerphone(employee.
+//                getNumberphone()).orElseThrow(() -> new UserExepion("Người dùng này không tồn tại")));
+//        addressUserService.addAddressUser(AddressUser.builder()
+//                .user(user.get())
+//                .province(employee.getProvince())
+//                .district(employee.getDistrict())
+//                .commune(employee.getCommune())
+//                .homeAddress(employee.getNotes())
+//                .build());
+//        detailService.saveCED(CategoryEmployeeeDetail.builder()
+//                .employeeCode(categoryEmployeeService.getCategoryEmployeeById(employee.getCategoryEmployee())
+//                                    .categoryName+detailService.getIdMax())
+//                        .salary(checkSalary(employee.getCategoryEmployee()))
+//                        .user(user.get())
+//                            .categoryEmployee(categoryEmployeeService.getCategoryEmployeeById(employee.getCategoryEmployee()))
+//                .build());
+//        return ResponseEntity.ok("Add New Employee succesfully");
+//    }
 
-                    default:
-                        break;
-                }
-            });
-            return  ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(combinedErrors);
-        }
 
-        AddressUser addressUser = new AddressUser();
-        Users users = userService.ConvertEmployeeDtoToUser(employee);
-        users.setRole(Roles.builder().roleId(1).roleName("EMPLOYEE").build());
-        users.setUsername(employee.getNumberphone());
-        users.setPassword(passwordEncoder.encode("nhanvien123"));
-        users.setIsActive(true);
-//        if (employee.get)
-        userService.saveUser(users);
-//        int id  = userService.f
-        Optional<Users> user = Optional.ofNullable(userService.findByNumerphone(employee.
-                getNumberphone()).orElseThrow(() -> new UserExepion("Người dùng này không tồn tại")));
-        addressUserService.addAddressUser(AddressUser.builder()
-                .user(user.get())
-                .province(employee.getProvince())
-                .district(employee.getDistrict())
-                .commune(employee.getCommune())
-                .homeAddress(employee.getNotes())
-                .build());
-        detailService.saveCED(CategoryEmployeeeDetail.builder()
-                .employeeCode(categoryEmployeeService.getCategoryEmployeeById(employee.getCategoryEmployee())
-                                    .categoryName+detailService.getIdMax())
-                        .salary(checkSalary(employee.getCategoryEmployee()))
-                        .user(user.get())
-                            .categoryEmployee(categoryEmployeeService.getCategoryEmployeeById(employee.getCategoryEmployee()))
-                .build());
-        return ResponseEntity.ok("Add New Employee succesfully");
-    }
-
-
-    @PutMapping("/update-employee")
-    public ResponseEntity<?> updateEmployee(@Valid @RequestBody EmployeeDTO employeeDTO,BindingResult bindingResult) throws UserExepion {
-        EmployeeErrorsRespone combinedErrors = new EmployeeErrorsRespone();
-        if (bindingResult.hasErrors()) {
-            bindingResult.getFieldErrors().forEach(fieldError -> {
-                String errorMessage = fieldError.getDefaultMessage();
-                switch (fieldError.getField()) {
-                    case "fullName":
-                        combinedErrors.setFullName((combinedErrors.getFullName() != null ? combinedErrors.getFullName() + "," : "") + errorMessage);
-                        break;
-                    case "imgUrl":
-                        combinedErrors.setImgUrl((combinedErrors.getImgUrl() != null ? combinedErrors.getImgUrl() + "," : "") + errorMessage);
-                        break;
-                    case "age":
-                        combinedErrors.setAge((combinedErrors.getAge() != null ? combinedErrors.getAge() + "," : "") + errorMessage);
-                        break;
-                    case "gender":
-                        combinedErrors.setGender((combinedErrors.getGender() != null ? combinedErrors.getGender() + "," : "") + errorMessage);
-                        break;
-                    case "numberphone":
-                        combinedErrors.setNumberphone((combinedErrors.getNumberphone() != null ? combinedErrors.getNumberphone() + "," : "") + errorMessage);
-                        break;
-                    case "birthday":
-                        combinedErrors.setBirthday((combinedErrors.getBirthday() != null ? combinedErrors.getBirthday() + "," : "") + errorMessage);
-                        break;
-                    case "email":
-                        combinedErrors.setEmail((combinedErrors.getEmail() != null ? combinedErrors.getEmail() + "," : "") + errorMessage);
-                        break;
-
-                    default:
-                        break;
-                }
-            });
-            return  ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(combinedErrors);
-        }
-        Users user = userService.findByNumerphone(employeeDTO.getNumberphone()).get();
-        AddressUser addressUser = addressUserService.getAddressUser(user.getUserId());
-        addressUser.setProvince(employeeDTO.getProvince());
-        addressUser.setDistrict(employeeDTO.getDistrict());
-        addressUser.setCommune(employeeDTO.getCommune());
-        addressUser.setHomeAddress(employeeDTO.getNotes());
-        addressUserService.saveAddressUser(addressUser);
-        userService.saveUser(user);
-        return null;
-    }
+//    @PutMapping("/update-employee")
+//    public ResponseEntity<?> updateEmployee(@Valid @RequestBody EmployeeDTO employeeDTO,BindingResult bindingResult) throws UserExepion {
+//        EmployeeErrorsRespone combinedErrors = new EmployeeErrorsRespone();
+//        if (bindingResult.hasErrors()) {
+//            bindingResult.getFieldErrors().forEach(fieldError -> {
+//                String errorMessage = fieldError.getDefaultMessage();
+//                switch (fieldError.getField()) {
+//                    case "fullName":
+//                        combinedErrors.setFullName((combinedErrors.getFullName() != null ? combinedErrors.getFullName() + "," : "") + errorMessage);
+//                        break;
+//                    case "imgUrl":
+//                        combinedErrors.setImgUrl((combinedErrors.getImgUrl() != null ? combinedErrors.getImgUrl() + "," : "") + errorMessage);
+//                        break;
+//                    case "age":
+//                        combinedErrors.setAge((combinedErrors.getAge() != null ? combinedErrors.getAge() + "," : "") + errorMessage);
+//                        break;
+//                    case "gender":
+//                        combinedErrors.setGender((combinedErrors.getGender() != null ? combinedErrors.getGender() + "," : "") + errorMessage);
+//                        break;
+//                    case "numberphone":
+//                        combinedErrors.setNumberphone((combinedErrors.getNumberphone() != null ? combinedErrors.getNumberphone() + "," : "") + errorMessage);
+//                        break;
+//                    case "birthday":
+//                        combinedErrors.setBirthday((combinedErrors.getBirthday() != null ? combinedErrors.getBirthday() + "," : "") + errorMessage);
+//                        break;
+//                    case "email":
+//                        combinedErrors.setEmail((combinedErrors.getEmail() != null ? combinedErrors.getEmail() + "," : "") + errorMessage);
+//                        break;
+//
+//                    default:
+//                        break;
+//                }
+//            });
+//            return  ResponseEntity.status(HttpStatus.SC_BAD_REQUEST).body(combinedErrors);
+//        }
+//        Users user = userService.findByNumerphone(employeeDTO.getNumberphone()).get();
+//        AddressUser addressUser = addressUserService.getAddressUser(user.getUserId());
+//        addressUser.setProvince(employeeDTO.getProvince());
+//        addressUser.setDistrict(employeeDTO.getDistrict());
+//        addressUser.setCommune(employeeDTO.getCommune());
+//        addressUser.setHomeAddress(employeeDTO.getNotes());
+//        addressUserService.saveAddressUser(addressUser);
+//        userService.saveUser(user);
+//        return null;
+//    }
 
     @PostMapping("/upload-image-employee")
     public ResponseEntity<?> uploadImageEmployee(
@@ -234,6 +238,45 @@ public class AdminController {
                 return 6000000;
         }
         return 0;
+    }
+
+
+    @PostMapping( value = "/create-deal",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createDeal (@AuthenticationPrincipal Users users,
+                                         @ModelAttribute DealDTO formData
+                                         ) throws IOException {
+        dealService.save(formData);
+        logger.info("Sending private message to " + formData.toString());
+        return ResponseEntity.ok("");
+    }
+    private static final Logger logger = LoggerFactory.getLogger(PrivateChat.class);
+
+    @GetMapping( "/deal/get-all")
+    public ResponseEntity<?> getAllDeal (@AuthenticationPrincipal Users users,
+                                         @RequestParam("size") Integer size,
+                                         @RequestParam("page") Integer page
+    ) throws IOException {
+        Pageable pageable =  PageRequest.of(page,size, Sort.by("startTime").descending());
+        return ResponseEntity.ok(dealService.findAll(pageable));
+    }
+    @GetMapping("/deal/page")
+    public ResponseEntity<?> getAllPageOfDeal() {
+        return ResponseEntity.ok(dealService.getAllPageOfDeals());
+    }
+
+
+    @PutMapping("/deal/update")
+    public ResponseEntity<?> updateDeal (@AuthenticationPrincipal Users users,
+                                         @RequestBody Deal deal) {
+        dealService.updateStatus(deal);
+        return ResponseEntity.ok("");
+    }
+
+    @DeleteMapping("/deal")
+    public ResponseEntity<?> deleteDeal (@AuthenticationPrincipal Users users,
+                                         @RequestParam("dealId") Integer dealId) {
+        dealService.delete(dealId);
+        return ResponseEntity.ok("");
     }
 
 

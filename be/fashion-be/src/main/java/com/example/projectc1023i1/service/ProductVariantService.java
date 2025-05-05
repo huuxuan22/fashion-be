@@ -2,6 +2,7 @@ package com.example.projectc1023i1.service;
 
 import com.example.projectc1023i1.Dto.ProductMorphology;
 import com.example.projectc1023i1.Dto.ProductVariantDTO;
+import com.example.projectc1023i1.Dto.get_data.CountByQualitySize;
 import com.example.projectc1023i1.Exception.DataNotFoundException;
 import com.example.projectc1023i1.model.*;
 import com.example.projectc1023i1.repository.impl.IColorRepo;
@@ -112,5 +113,15 @@ public class ProductVariantService implements IProductVariantService {
     public Page<ProductVariant> findByProductId(Integer productId, Pageable pageable) {
         Page<ProductVariant> productVariants = productVariantRepo.findByProductId(productId, pageable);
         return productVariants;
+    }
+
+    @Override
+    public Integer getSoldOfProduct(Integer productId) {
+        return productVariantRepo.getSoldOfProduct(productId);
+    }
+
+    @Override
+    public List<CountByQualitySize> countQuanlityWithSizeByColorId(Integer productId, Integer colorId) {
+        return productVariantRepo.countQuanlityWithSizeByColorId(productId,colorId);
     }
 }

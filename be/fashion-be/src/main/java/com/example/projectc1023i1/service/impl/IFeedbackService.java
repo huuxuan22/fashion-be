@@ -20,4 +20,5 @@ public interface IFeedbackService {
     Feedback findById(Integer id);
     Integer getTotalPage( Integer productId,Integer rating);
     Double getAverageRating(Integer productId);
+    Integer getAllRatingByProductId( Integer productId);
 }

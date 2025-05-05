@@ -14,21 +14,20 @@ public class AddressUser {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "address_user_id")
     private Integer addressUserId;
-
-    @Column(name = "province")
-    private String province;
-
-    @Column(name = "district")
-    private String district;
-
-    @Column(name = "commune")
-    private String commune;
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "province")
+    private Province province;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "district_id")
+    private District district;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "commune_id")
+    private Commune commune;
     @Column(name = "home_address")
     private String homeAddress;
-
     @OneToOne
     @JoinColumn(name = "user_id")
     private Users user;
+    private String phone;
 
 }

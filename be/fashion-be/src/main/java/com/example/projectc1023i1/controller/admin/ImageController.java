@@ -7,14 +7,30 @@ import org.springframework.web.bind.annotation.*;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
+@RestController
 @RequestMapping("/image")
-@RestController()
 public class ImageController {
     @GetMapping("/product/{link}")
     public ResponseEntity<?> getImage(@PathVariable("link") String link) {
         try {
             Path imagePath = Paths.get("uploads/product/"+link);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            }else {
+                return ResponseEntity.notFound().build();
+            }
+        }catch ( Exception e ) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/deal/{link}")
+    public ResponseEntity<?> getImages(@PathVariable("link") String link) {
+        try {
+            Path imagePath = Paths.get("uploads/deal_coupon/"+link);
             UrlResource resource = new UrlResource(imagePath.toUri());
             if (resource.exists()) {
                 return ResponseEntity.ok()

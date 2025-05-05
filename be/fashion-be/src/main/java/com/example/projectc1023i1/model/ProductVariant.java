@@ -3,6 +3,9 @@ package com.example.projectc1023i1.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Getter
 @Setter
@@ -36,4 +39,6 @@ public class ProductVariant {
     @ManyToOne
     @JoinColumn(name = "size_id")
     private Size size;
+
+
 }

@@ -12,4 +12,7 @@ import java.util.List;
 public interface IImageRepo extends JpaRepository<Image, Integer> {
     @Query("select i.imageUrl from Image as i where i.product.productId = :param")
     List<String> findByProductId(@Param("param") Integer productId);
+
+    @Query("select i from Image i where i.product.productId = :productId")
+    List<Image> findAllByProductId(@Param("productId") int productId);
 }
