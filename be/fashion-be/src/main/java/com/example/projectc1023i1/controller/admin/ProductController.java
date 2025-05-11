@@ -448,9 +448,19 @@ public class ProductController {
      * @param users
      * @return
      */
-    @GetMapping("standOut")
-    public ResponseEntity<?> getProductStandOut(@AuthenticationPrincipal Users users) {
-        return ResponseEntity.ok(productService.getProduct10());
+    @GetMapping("standOut-nam")
+    public ResponseEntity<?> getProductStandOutNam(@AuthenticationPrincipal Users users) {
+        return ResponseEntity.ok(productService.getProductNam10());
+    }
+
+    /**
+     * lay 10 san pham noi bat
+     * @param users
+     * @return
+     */
+    @GetMapping("standOut-nu")
+    public ResponseEntity<?> getProductStandOutNu(@AuthenticationPrincipal Users users) {
+        return ResponseEntity.ok(productService.getProductNu10());
     }
 
     /**
@@ -530,5 +540,9 @@ public class ProductController {
         return ResponseEntity.ok(productService.findAllByProductName(value));
     }
 
+    @GetMapping("/category")
+    public ResponseEntity<?> getProductWithCategories(@AuthenticationPrincipal Users users) {
 
+        return ResponseEntity.ok(productService.getProductWithCategories());
+    }
 }

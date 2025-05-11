@@ -43,4 +43,21 @@ public class ImageController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/collection/{link}")
+    public ResponseEntity<?> getImagesCollection(@PathVariable("link") String link) {
+        try {
+            Path imagePath = Paths.get("uploads/collection/"+link);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            }else {
+                return ResponseEntity.notFound().build();
+            }
+        }catch ( Exception e ) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

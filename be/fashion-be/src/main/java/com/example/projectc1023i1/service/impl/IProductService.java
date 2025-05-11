@@ -30,8 +30,17 @@ public interface IProductService {
     List<Product> getDiscountProduct();
     Page<Product> findProductByValue(String value,Pageable pageable);
     Integer getAllPageProductByValue(String value);
-    List<Product> getProduct10();
+    List<Product> getProductNam10();
+    List<Product> getProductNu10();
     List<Product> getSameProduct(Integer subCategoryId,Integer productId);
     List<Product> findAdd12();
     List<Product> findAllByProductName( String productName);
+    List<Product> getProductWithCategories();
+    Page<Product> findProducts(Integer colorId, Integer sizeId, Integer categoryId, Integer subCategoryId,
+            Pageable pageable);
+    Integer getAllTotal(
+             Integer colorId,
+             Integer sizeId,
+             Integer categoryId,
+             Integer subCategoryId);
 }

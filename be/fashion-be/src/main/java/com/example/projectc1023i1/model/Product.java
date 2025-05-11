@@ -52,6 +52,8 @@ public class Product {
     private SubCategories categories;
 
 
+
+
     @PrePersist
     public void prePersist() {
         createdAt = LocalDateTime.now();

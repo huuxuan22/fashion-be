@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
 
 @Setter
 @Getter
@@ -25,9 +26,9 @@ public class Coupon {
     @Column(name = "discount_value")
     private Double discountValue;
     @Column(name = "start_time")
-    private Date startTime;
+    private LocalDateTime startTime;
     @Column(name = "end_time")
-    private Date endTime;
+    private LocalDateTime endTime;
     @Column(name = "usage_limit")
     private Integer usageLimit;
     @Column(name = "coupon_status")

@@ -1,7 +1,10 @@
 package com.example.projectc1023i1.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Setter
@@ -24,4 +27,8 @@ public class    Categories {
 
     @Column(name = "thumbnail")
     private String thumbnail;
+
+    @OneToMany(mappedBy = "categories", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<SubCategories> subCategories;
 }

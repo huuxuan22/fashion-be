@@ -1,13 +1,14 @@
 package com.example.projectc1023i1.service.impl;
 
 import com.example.projectc1023i1.Dto.CategoriesDTO;
+import com.example.projectc1023i1.Dto.get_data.category_mapstruck.CategoryMapper;
 import com.example.projectc1023i1.model.Categories;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface ICategoriesService {
-    List<Categories> findAll();
+    List<CategoryMapper> findAll();
     Categories save(Categories categories);
     void delete(Categories categories);
     Optional<Categories> findById(Integer id);

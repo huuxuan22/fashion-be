@@ -207,9 +207,16 @@ public class ProductService implements IProductService {
     }
 
     @Override
-    public List<Product> getProduct10() {
-        return productRepo.findAll10();
+    public List<Product> getProductNam10() {
+        return productRepo.findAllNam10();
     }
+
+    @Override
+    public List<Product> getProductNu10() {
+        return productRepo.findAllNu10();
+    }
+
+
 
     @Override
     public List<Product> getSameProduct(Integer subCategoryId,Integer productId) {
@@ -228,5 +235,21 @@ public class ProductService implements IProductService {
     @Override
     public List<Product> findAllByProductName(String productName) {
         return productRepo.findAllByProductName(productName);
+    }
+
+    @Override
+    public List<Product> getProductWithCategories() {
+        return productRepo.getProductWithCategories();
+    }
+
+    @Override
+    public Page<Product> findProducts(Integer colorId, Integer sizeId, Integer categoryId, Integer subCategoryId, Pageable pageable) {
+        return productRepo.findProducts(colorId, sizeId, categoryId, subCategoryId, pageable);
+    }
+
+    @Override
+    public Integer getAllTotal(Integer colorId, Integer sizeId, Integer categoryId, Integer subCategoryId) {
+        return productRepo.getAllTotal(colorId, sizeId, categoryId, subCategoryId) % 8 == 0 ?
+                productRepo.getAllTotal(colorId, sizeId, categoryId, subCategoryId) / 8 : productRepo.getAllTotal(colorId, sizeId, categoryId, subCategoryId) /8 + 1;
     }
 }

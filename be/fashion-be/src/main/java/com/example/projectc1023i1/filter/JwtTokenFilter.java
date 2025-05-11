@@ -101,6 +101,7 @@ public class JwtTokenFilter extends OncePerRequestFilter {
                 final List<Pair<String, String >> bypassTokens = Arrays.asList(
                         org.modelmapper.internal.Pair.of("/image/product","GET"),
                         org.modelmapper.internal.Pair.of("/image/deal","GET"),
+                        org.modelmapper.internal.Pair.of("/image/collection","GET"),
 
                     org.modelmapper.internal.Pair.of("/api/categories/getAll","GET"),
                     org.modelmapper.internal.Pair.of("/api/categories","GET"),

@@ -38,7 +38,7 @@ public interface IProductRepo extends JpaRepository<Product, Integer> {
      * lay sanr pham giam gia
      * @return
      */
-    @Query("select p from Product p where p.isActive = true order by p.createdAt limit 3")
+    @Query("select p from Product p where p.isActive = true order by p.createdAt limit 4    ")
     List<Product> getDiscountProduct();
 
     @Query("select p from Product as p where p.productName = :param")
@@ -65,8 +65,12 @@ public interface IProductRepo extends JpaRepository<Product, Integer> {
     @Query("select count(p) from  Product p where p.productName like concat('%',:value,'%') ")
     Integer countAllByProductName(@Param("value") String productName);
 
-    @Query("select p from Product p order by p.createdAt desc limit 10")
-    List<Product> findAll10();
+
+    @Query("select p from Product p where p.categories.categories.categorieId = 2 order by p.createdAt desc limit 10")
+    List<Product> findAllNam10();
+
+    @Query("select p from Product p where p.categories.categories.categorieId = 1 order by p.createdAt desc limit 10")
+    List<Product> findAllNu10();
 
     @Query("select p from Product p where p.categories.subCategoryId = :subCateId and p.productId != :productId")
     List<Product> findAllByProductName(@Param("subCateId") Integer subCateId, @Param("productId") Integer productId);
@@ -74,4 +78,58 @@ public interface IProductRepo extends JpaRepository<Product, Integer> {
     List<Product> findAllByProductName(@Param("productName") String productName);
     @Query("select p from  Product p order by p.price asc limit 12")
     List<Product> findAll12();
+
+    @Query(value = "select \n" +
+            "    product_id,\n" +
+            "    product_name,\n" +
+            "    description,\n" +
+            "    sub_cate_id,\n" +
+            "    quality,\n" +
+            "    is_active,\n" +
+            "    thumbnail,\n" +
+            "    created_at,\n" +
+            "    updated_at,\n" +
+            "    sell_price,\n" +
+            "    price\n" +
+            "from (\n" +
+            "    select \n" +
+            "        p.*, \n" +
+            "        row_number() over (partition by c.categories_id order by p.created_at desc) as rn\n" +
+            "    from products p\n" +
+            "    join sub_categories sc on p.sub_cate_id = sc.sub_cate_id\n" +
+            "    join categories c on sc.categories_id = c.categories_id\n" +
+            ") as ranked\n" +
+            "where rn <= 2;\n", nativeQuery = true)
+    List<Product> getProductWithCategories();
+
+    @Query("select distinct  p from Product p inner join ProductVariant pv on pv.product.productId = p.productId " +
+            "inner join fetch  Size s on s.sizeId = pv.size.sizeId " +
+            "inner join fetch  Color c on c.colorId = pv.color.colorId " +
+            "inner join fetch   SubCategories sc on sc.subCategoryId = p.categories.subCategoryId " +
+            "inner join fetch  Categories  cg on cg.categorieId = sc.categories.categorieId " +
+            "where (:colorId is null or c.colorId = :colorId) " +
+            "and (:sizeId is null  or s.sizeId = :sizeId) " +
+            "and (:categoryId is null or cg.categorieId = :categoryId) and " +
+            "(:subCategoryId IS NULL OR sc.subCategoryId = :subCategoryId)")
+    Page<Product> findProducts(
+            @Param("colorId") Integer colorId,
+            @Param("sizeId") Integer sizeId,
+            @Param("categoryId") Integer categoryId,
+            @Param("subCategoryId") Integer subCategoryId,
+            Pageable pageable);
+
+    @Query("select  count(distinct  p.productId) from Product p inner join ProductVariant pv on pv.product.productId = p.productId " +
+            "inner join fetch  Size s on s.sizeId = pv.size.sizeId " +
+            "inner join fetch Color c on c.colorId = pv.color.colorId " +
+            "inner join fetch  SubCategories sc on sc.subCategoryId = p.categories.subCategoryId " +
+            "inner join fetch Categories  cg on cg.categorieId = sc.categories.categorieId " +
+            "where (:colorId is null or c.colorId = :colorId) " +
+            "and (:sizeId is null  or s.sizeId = :sizeId) " +
+            "and (:categoryId is null or cg.categorieId = :categoryId) and " +
+            "(:subCategoryId IS NULL OR sc.subCategoryId = :subCategoryId)")
+    Integer getAllTotal(
+            @Param("colorId") Integer colorId,
+            @Param("sizeId") Integer sizeId,
+            @Param("categoryId") Integer categoryId,
+            @Param("subCategoryId") Integer subCategoryId);
 }

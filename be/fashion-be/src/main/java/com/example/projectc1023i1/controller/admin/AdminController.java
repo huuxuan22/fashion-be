@@ -1,5 +1,6 @@
 package com.example.projectc1023i1.controller.admin;
 
+import com.example.projectc1023i1.Dto.CouponDTO;
 import com.example.projectc1023i1.Dto.DealDTO;
 import com.example.projectc1023i1.Dto.EmployeeDTO;
 import com.example.projectc1023i1.Exception.DataNotFoundException;
@@ -52,6 +53,9 @@ public class AdminController {
 
     @Autowired
     private IDealService dealService;
+
+    @Autowired
+    private ICouponService couponService;
 
     /**
      *
@@ -277,6 +281,26 @@ public class AdminController {
                                          @RequestParam("dealId") Integer dealId) {
         dealService.delete(dealId);
         return ResponseEntity.ok("");
+    }
+
+    @PostMapping(value = "/coupon/create",consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<?> createCoupon (@ModelAttribute CouponDTO formData) throws IOException {
+        couponService.createCoupon(formData);
+        logger.info("Sending private message to " + formData.toString());
+        return ResponseEntity.ok("");
+    }
+
+    @GetMapping( "/coupon/get-all")
+    public ResponseEntity<?> getAllCoupon (@AuthenticationPrincipal Users users,
+                                         @RequestParam("size") Integer size,
+                                         @RequestParam("page") Integer page
+    ) throws IOException {
+        Pageable pageable =  PageRequest.of(page,size, Sort.by("startTime").descending());
+        return ResponseEntity.ok(couponService.getCoupons(pageable));
+    }
+    @GetMapping("/coupon/page")
+    public ResponseEntity<?> getAllPageOfCoupon() {
+        return ResponseEntity.ok(couponService.countTotalCoupons());
     }
 
 
