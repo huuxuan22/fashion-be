@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public interface IDealRepo extends JpaRepository<Deal, Integer> {
     @Query("update Deal set dealStatus = :dealStatus where dealId = :dealId")
     @Transactional
@@ -19,4 +21,7 @@ public interface IDealRepo extends JpaRepository<Deal, Integer> {
     @Modifying
     @Query("delete Deal where dealId = :dealId")
     void deleteDeal(@Param("dealId") Integer dealId);
+
+    @Query("select d from Deal d where d.product.productId = :productId and d.dealStatus = 'CREATE' ")
+    List<Deal> findByProduct(@Param("productId") Integer productId);
 }

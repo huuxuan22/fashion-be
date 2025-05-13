@@ -91,6 +91,16 @@ public class DealService implements IDealService {
         return dealRepo.getAllPage() % 4 == 0 ? dealRepo.getAllPage() / 4 : dealRepo.getAllPage() / 4 + 1;
     }
 
+    @Override
+    public List<Deal> findByProduct(Integer productId) {
+        return dealRepo.findByProduct(productId);
+    }
+
+    @Override
+    public void decreaseOneDealQuality(List<Deal> deals) {
+
+    }
+
     public String storeFile(MultipartFile file) throws IOException, java.io.IOException {
         if (!isImageFile(file) || file.getOriginalFilename() == null) {
             throw new com.example.projectc1023i1.Exception.IOException("Ảnh bạn chọn không phù hợp ");

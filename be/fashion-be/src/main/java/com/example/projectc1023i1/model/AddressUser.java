@@ -1,5 +1,6 @@
 package com.example.projectc1023i1.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,25 +10,37 @@ import lombok.*;
 @AllArgsConstructor
 @Builder
 @Entity
+@Table(name = "address_user")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class AddressUser {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "address_user_id")
     private Integer addressUserId;
-    @ManyToOne(fetch = FetchType.LAZY)
+
+
+    @ManyToOne
     @JoinColumn(name = "province")
     private Province province;
-    @ManyToOne(fetch = FetchType.LAZY)
+
+    @ManyToOne
     @JoinColumn(name = "district_id")
     private District district;
-    @ManyToOne(fetch = FetchType.LAZY)
+
+
+    @ManyToOne
     @JoinColumn(name = "commune_id")
     private Commune commune;
+
+
     @Column(name = "home_address")
     private String homeAddress;
-    @OneToOne
+
+
+    @ManyToOne
     @JoinColumn(name = "user_id")
     private Users user;
+
     private String phone;
 
 }

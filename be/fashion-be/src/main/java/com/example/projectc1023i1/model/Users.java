@@ -41,7 +41,7 @@ public class Users implements UserDetails { // ddaay laf class lay ra thong tin 
 
 
     @Column(name = "birthday")
-    private Timestamp birthday;
+        private Timestamp birthday;
 
     @Column(name = "username")
     private String username;
@@ -63,6 +63,8 @@ public class Users implements UserDetails { // ddaay laf class lay ra thong tin 
     @OneToOne
     @JoinColumn(name = "role_id")
     private Roles role;
+
+
 
     @PrePersist
     public void prePersist() {

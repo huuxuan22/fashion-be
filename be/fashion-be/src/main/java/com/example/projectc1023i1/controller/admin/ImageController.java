@@ -60,4 +60,21 @@ public class ImageController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/user/{link}")
+    public ResponseEntity<?> getImagesUser(@PathVariable("link") String link) {
+        try {
+            Path imagePath = Paths.get("uploads/user/"+link);
+            UrlResource resource = new UrlResource(imagePath.toUri());
+            if (resource.exists()) {
+                return ResponseEntity.ok()
+                        .contentType(MediaType.IMAGE_JPEG)
+                        .body(resource);
+            }else {
+                return ResponseEntity.notFound().build();
+            }
+        }catch ( Exception e ) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }

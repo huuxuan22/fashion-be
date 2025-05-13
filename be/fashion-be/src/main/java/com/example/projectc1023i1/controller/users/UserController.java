@@ -1,18 +1,20 @@
 package com.example.projectc1023i1.controller.users;
 
 
+import com.example.projectc1023i1.Dto.AddressUserDTO;
 import com.example.projectc1023i1.Dto.CollectionDTO;
+import com.example.projectc1023i1.Dto.UserDTO;
+import com.example.projectc1023i1.Dto.UserUpdateDTO;
 import com.example.projectc1023i1.Exception.UserExepion;
+import com.example.projectc1023i1.component.JwtTokenUtils;
 import com.example.projectc1023i1.model.*;
 import com.example.projectc1023i1.request.UpdateUserRequest;
 import com.example.projectc1023i1.respone.ApiRespone;
 import com.example.projectc1023i1.service.DealService;
 import com.example.projectc1023i1.service.ProductService;
 import com.example.projectc1023i1.service.UserService;
-import com.example.projectc1023i1.service.impl.ICollectionService;
-import com.example.projectc1023i1.service.impl.ICouponService;
-import com.example.projectc1023i1.service.impl.IDealService;
-import com.example.projectc1023i1.service.impl.IProductService;
+import com.example.projectc1023i1.service.VerificationService;
+import com.example.projectc1023i1.service.impl.*;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -22,17 +24,27 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.util.List;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.util.*;
 
 @RequestMapping("/api/users")
 @RestController
 public class UserController {
     @Autowired
-    private UserService userService;
+    private IUserService userService;
     @Autowired
     private IProductService productService;
     @Autowired
@@ -41,6 +53,19 @@ public class UserController {
     private IDealService dealService;
     @Autowired
     private ICollectionService collectionService;
+    @Autowired
+    private IAddressUserService addressUserService;
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private VerificationService verificationService;
+
+    @Autowired
+    private AuthenticationManager authenticationManager;
+
+    @Autowired
+    private JwtTokenUtils tokenUtils;
 
     @GetMapping("/profile")
     public ResponseEntity<Users> getUserProfileHandler (@AuthenticationPrincipal Users user) throws UserExepion {
@@ -53,11 +78,11 @@ public class UserController {
         return  new ResponseEntity<List<Users>>(users, HttpStatus.OK);
     }
 
-    @PostMapping("/update-profile")
-    public ResponseEntity<ApiRespone> updateProfile (@RequestBody UpdateUserRequest user,
-                                                     @AuthenticationPrincipal Users users) throws UserExepion {
+    @PostMapping(value = "/update-profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<ApiRespone> updateProfile (@ModelAttribute UserUpdateDTO userDTO,
+                                                     @AuthenticationPrincipal Users users) throws UserExepion, IOException {
 
-        Users userUpdate = userService.updateUser(users.getUserId(),user);
+        Users userUpdate = userService.updateUser(users,userDTO);
         ApiRespone apiRespone = new ApiRespone("Update Profile User Succes",true);
         return new ResponseEntity<ApiRespone>(apiRespone, HttpStatus.ACCEPTED);
     }
@@ -136,4 +161,94 @@ public class UserController {
         return ResponseEntity.ok(collectionService.findByLast());
     }
 
+    @GetMapping("/address")
+    public ResponseEntity<?> getAllArress(@AuthenticationPrincipal Users users) {
+        List<AddressUser> addressUsers = addressUserService.getAddressUser(users.getUserId());
+        return ResponseEntity.ok(addressUsers);
+    }
+
+    @PostMapping("/add-new-address")
+    public ResponseEntity<?> addnewAddress (@AuthenticationPrincipal Users users,
+                                            @RequestBody AddressUserDTO addressUserDTO) throws UserExepion {
+        addressUserService.addNewAddress(addressUserDTO,users);
+        return ResponseEntity.ok("oke nha");
+    }
+
+    @PostMapping("/update-address")
+    public ResponseEntity<?> updateAddress (@AuthenticationPrincipal Users users,
+                                            @RequestBody AddressUser addressUser) throws UserExepion {
+        addressUserService.updateAddress(addressUser,users);
+        return ResponseEntity.ok("oke nha");
+    }
+
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<?> deleteAddress (@AuthenticationPrincipal Users users,
+                                            @RequestParam("id") Integer id) throws UserExepion {
+        addressUserService.deleteAddressUser(id);
+        return ResponseEntity.ok("oke nha");
+    }
+
+    @PostMapping("/change-password")
+    public ResponseEntity<?> changePassword(@AuthenticationPrincipal Users users,
+                                            @RequestParam("oldPassword") String oldPassword) {
+
+        boolean check = passwordEncoder.matches(oldPassword,users.getPassword());
+        if (check) {
+            return ResponseEntity.ok(true);
+        }else {
+            return ResponseEntity.ok(false);
+        }
+    }
+
+    @PostMapping("/update-password")
+    public ResponseEntity<?> updatePassword (@AuthenticationPrincipal Users users,
+                                             @RequestParam("newPassword") String newPassword,
+                                             @RequestParam("code") String code) {
+        boolean flag = verificationService.verifyCode(users.getEmail(), code);
+        if (!flag) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("mã xác thực không đúng");
+        }
+        users.setPassword(passwordEncoder.encode(newPassword));
+        userService.changePassword(users);
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(users.getUsername(),newPassword)
+        );
+        Users register = (Users) authentication.getPrincipal();
+        String jwt = tokenUtils.generateToken(register);
+        return ResponseEntity.ok(jwt);
+    }
+
+    /**
+     * lay ma giam gia
+     */
+    @GetMapping("/get-coupon")
+    public ResponseEntity<?> getCoupon(@AuthenticationPrincipal Users users,
+                                       @RequestParam("code") String code) {
+        Coupon coupon = couponService.findByCouponCode(code);
+        Map<String, Object> response = new HashMap<>();
+        if (coupon == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Mã không tồn tại");
+        }else if (coupon.getUsageLimit() <= 0) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("số lượng đã hết");
+        } else  {
+            return ResponseEntity.ok(coupon);
+        }
+    }
+
+    @GetMapping("/get-deal")
+    public ResponseEntity<?> getDeal(@AuthenticationPrincipal Users users,
+                                       @RequestParam("productId") Integer productId) {
+//        Deal;
+        List<Deal> dealList = dealService.findByProduct(productId);
+        return  ResponseEntity.ok(dealList);
+    }
+
+    @PostMapping("/decrease-coupon")
+    public ResponseEntity<?> decreaseCoupon(@AuthenticationPrincipal Users users,
+                                            @RequestBody Coupon coupon) {
+//        Deal;
+        couponService.decreaseOneCouponQuality(coupon);
+        return  ResponseEntity.ok("oke nha");
+    }
 }

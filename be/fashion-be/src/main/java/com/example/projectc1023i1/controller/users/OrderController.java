@@ -71,9 +71,9 @@ public class OrderController {
         return ResponseEntity.ok(cartService.findByUserId(Long.valueOf(users.getUserId())));
     }
 
-    @DeleteMapping("/cart")
+    @PostMapping("/cart")
     public ResponseEntity<?> deleteCart(@AuthenticationPrincipal Users users,
-                                        @RequestParam("cartIds") List<Long> cartId) {
+                                        @RequestBody List<Long> cartId) {
         for (Long i : cartId) {
             cartService.deleteByCart(i);
         }

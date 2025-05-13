@@ -70,6 +70,17 @@ public class CouponService implements ICouponService {
         return couponRepo.countCoupon() % 5 == 0 ? couponRepo.countCoupon() / 5 : couponRepo.countCoupon() / 5 + 1;
     }
 
+    @Override
+    public Coupon findByCouponCode(String param) {
+        return couponRepo.findByCouponCode(param);
+    }
+
+    @Override
+    public void decreaseOneCouponQuality(Coupon coupon) {
+        coupon.setUsageLimit(coupon.getUsageLimit() - 1);
+        couponRepo.save(coupon);
+    }
+
 
     public String storeFile(MultipartFile file) throws IOException, java.io.IOException {
         if (!isImageFile(file) || file.getOriginalFilename() == null) {

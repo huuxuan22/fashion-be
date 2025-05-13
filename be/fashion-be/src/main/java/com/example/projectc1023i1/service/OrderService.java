@@ -43,6 +43,7 @@ public class OrderService implements IOrderService {
     @Modifying
     public void saveOrder(OrderDetailDTO orderDetailDTO, Users users, List<ProductDetailDTO> productDetailDTOS) {
         try {
+            List<ProductVariant> productVariantList = new ArrayList<>();
             String orderCode = generateOrderCode();
             Order order = Order.builder()
                     .orderDate(LocalDateTime.now())
@@ -54,8 +55,6 @@ public class OrderService implements IOrderService {
                     .orderCode(orderCode)
                     .build();
             orderRepo.save(order);
-
-
             for (ProductDetailDTO dto : productDetailDTOS) {
                 ProductVariant variant = ProductVariant.builder()
                         .size(dto.getSize())
@@ -74,8 +73,17 @@ public class OrderService implements IOrderService {
                         .quality(dto.getStock())
                         .order(orderRepo.findByOrderCode(orderCode))
                         .build();
+                ProductVariant productVariant = productVariantRepo.findQuanlityByProductIdAndSizeIdAndColorId(
+                        dto.getProduct().getProductId(), dto.getSize().getSizeId(), dto.getColor().getColorId());
+
+                Product product = productRepo.findById(productVariant.getProduct().getProductId()).get();
+                product.setQuality(product.getQuality() - dto.getStock());
+                productVariant.setStock(productVariant.getStock() - dto.getStock());
+                productVariantList.add(productVariant);
+                productRepo.save(product); // tru di so luong da mua trong da 1 don hang
                 orderDetailRepo.save(orderDetails);
             }
+            productVariantRepo.saveAll(productVariantList); //tru di so luong da mua trong da 1 don hang
             Province province = getOrSaveProvince(orderDetailDTO.getProvince());
             District district = getOrSaveDistrict(orderDetailDTO.getDistrict());
             Commune commune = getOrSaveCommune(orderDetailDTO.getCommune());

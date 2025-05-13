@@ -76,25 +76,7 @@ public class AdminController {
     }
 
 
-    /**
-     *
-     * @param userId
-     * @return thong tin cua nguoi dung
-     * @throws UserExepion neu khonng tim thay thong tin cua nguoi dung
-     */
-    @GetMapping("/get-infor-employee")
-    public ResponseEntity<?> getInforEmployee(@AuthenticationPrincipal  Users user,
-                                              @RequestParam("userId") Integer userId) throws UserExepion {
-        UserRespone userRespone = userService.convertUserToUserRespone(userService.findUserById(userId));
-        AddressUser addressUser = addressUserService.getAddressUser(userId);
-//        if (addressUser == null) {
-//            throw new UserExepion("loại nhân viên này đang xảy ra vấn đề");
-//        }
-        return ResponseEntity.ok(GetInforEmployeeUpdate.builder()
-                        .userRespone(userRespone)
-                        .addressUser(addressUser)
-                .build());
-    }
+
 
     @GetMapping("/get-all-category-employee")
     public ResponseEntity<?> getAllEmployee() {

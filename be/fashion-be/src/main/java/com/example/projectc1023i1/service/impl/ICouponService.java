@@ -4,6 +4,7 @@ import com.example.projectc1023i1.Dto.CouponDTO;
 import com.example.projectc1023i1.model.Coupon;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.query.Param;
 
 import java.io.IOException;
 
@@ -12,4 +13,6 @@ public interface ICouponService {
     Page<Coupon> getCoupons(Pageable pageable);
     void deleteCoupon(Long couponId);
     Integer countTotalCoupons();
+    Coupon findByCouponCode( String param);
+    void decreaseOneCouponQuality(Coupon coupon);
 }
