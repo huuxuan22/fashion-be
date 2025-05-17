@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Setter
 @Getter
@@ -19,15 +20,20 @@ public class Order {
     private long orderId;
     @Column(name = "order_code")
     private String orderCode;
-    @Enumerated(EnumType.STRING)
     @Column(name = "status")
-    private OrderStatus status;
+    private String status;
     @Column(name = "payment_type")
     private String paymentType;
+    @Column(name = "address")
+    private String address;
     private Double total;
     private LocalDateTime orderDate;
+    @Column(name = "note")
     private String note;
     @ManyToOne
     @JoinColumn(name = "user_id")
     private Users users;
+
+    @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrderDetails> orderDetailsList;
 }

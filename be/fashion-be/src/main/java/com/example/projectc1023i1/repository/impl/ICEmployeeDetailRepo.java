@@ -15,4 +15,6 @@ public interface ICEmployeeDetailRepo extends JpaRepository<CategoryEmployeeeDet
 
     @Query(value = "select u from category_employee_details u where u.user_id = :param",nativeQuery = true)
     Optional<CategoryEmployeeeDetail> getEmployeeDetails(@Param("param") Integer param);
+
+
 }

@@ -3,20 +3,21 @@ package com.example.projectc1023i1.service;
 import com.example.projectc1023i1.Dto.OrderDetailDTO;
 import com.example.projectc1023i1.Dto.ProductDetailDTO;
 import com.example.projectc1023i1.Dto.ProductVariantDTO;
+import com.example.projectc1023i1.Dto.get_data.order_maptruck.OrderMaptruck;
 import com.example.projectc1023i1.model.*;
 import com.example.projectc1023i1.repository.impl.*;
 import com.example.projectc1023i1.service.impl.IOrderService;
+import com.example.projectc1023i1.service.mapper.IOrderMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,7 +38,12 @@ public class OrderService implements IOrderService {
     private IAddressUserRepo addressUserRepo;
     @Autowired
     private IOrderDetailRepo orderDetailRepo;
-
+    @Autowired
+    private IUserRepository userRepo;
+    @Autowired
+    private IOrderMapper orderMapper;
+    @Autowired
+    private INotificationRepo notificationRepo;
     @Override
     @Transactional
     @Modifying
@@ -50,7 +56,11 @@ public class OrderService implements IOrderService {
                     .users(users)
                     .total(orderDetailDTO.getTotalPrice())
                     .paymentType(orderDetailDTO.getPaymentType())
-                    .status(OrderStatus.valueOf(orderDetailDTO.getStatus()))
+                    .status("CREATE")
+                    .address(
+                            orderDetailDTO.getStreet() + ", " + orderDetailDTO.getCommune().getName() + ", "
+                            + orderDetailDTO.getDistrict().getName() + ", " + orderDetailDTO.getProvince().getName()
+                    )
                     .note(orderDetailDTO.getNote())
                     .orderCode(orderCode)
                     .build();
@@ -100,6 +110,84 @@ public class OrderService implements IOrderService {
             throw new RuntimeException("Error while saving order", e);
         }
     }
+
+    @Override
+    public Page<OrderMaptruck> findAllOrderAdmin(Pageable pageable,String category) {
+        Page<OrderMaptruck> orderMaptrucks = null;
+        if (category.equals("CREATE")) {
+            orderMaptrucks = orderMapper.toFeedbackDTOPage(orderRepo.findAllOrderAdminByCREATE(pageable));
+        } else if (category.equals("DELIVERY")) {
+            orderMaptrucks = orderMapper.toFeedbackDTOPage(orderRepo.findAllOrderAdminByDELIVERy(pageable));
+        }else {
+            orderMaptrucks = orderMapper.toFeedbackDTOPage(orderRepo.findAllOrderAdmin(pageable));
+        }
+        return orderMaptrucks;
+    }
+
+    @Override
+    public Integer countOrder(String param) {
+        if (param.equals("")) {
+            return orderRepo.countOrderALL()%8==0 ? orderRepo.countOrderALL()/8 : orderRepo.countOrderALL()/8 + 1;
+        }
+        return orderRepo.countOrder(param)%8==0 ?orderRepo.countOrder(param)/8 : orderRepo.countOrder(param)/8 + 1;
+    }
+
+    @Override
+    public Integer countOrderALLUser(Integer userId) {
+        return orderRepo.countOrderALLUser(userId) % 8 == 0 ? orderRepo.countOrderALLUser(userId)/8 : orderRepo.countOrderALLUser(userId)/8 + 1;
+    }
+
+    @Override
+    public void completeOrder(Long orderId) {
+        Order order = orderRepo.findById(orderId).get();
+        Users users = userRepo.findById(order.getUsers().getUserId()).get();
+        Notifcation notifcation = Notifcation.builder()
+                .message("Đơn hàng của bạn đã hoàn thành")
+                .order(order)
+                .user(users)
+                .status(false)
+                .createAt(LocalDateTime.now())
+                .build();
+        orderRepo.completeOrder(orderId);
+        notificationRepo.save(notifcation);
+    }
+
+    @Override
+    public void deliveryOrder(Long orderId) {
+        Order order = orderRepo.findById(orderId).get();
+        Users users = userRepo.findById(order.getUsers().getUserId()).get();
+        Notifcation notifcation = Notifcation.builder()
+                .message("Đơn hàng của bạn đã được vận chuyển")
+                .order(order)
+                .user(users)
+                .status(false)
+                .createAt(LocalDateTime.now())
+                .build();
+        orderRepo.deliveryOrder(orderId);
+        notificationRepo.save(notifcation);
+    }
+
+    @Override
+    public Page<OrderMaptruck> findAllOrderUser(Pageable pageable, Integer userId) {
+        Page<Order> orders = orderRepo.findAllOrderUser(pageable, userId);
+        return orderMapper.toFeedbackDTOPage(orders);
+    }
+
+    @Override
+    public void cancelOrder(Integer userId, Long orderId) {
+        orderRepo.cancelOrder(userId,orderId);
+    }
+
+    @Override
+    public boolean existsByOrderIdAndUser(Long orderId, Integer userId) {
+        return orderRepo.existsByOrderIdAndUser(orderId, userId);
+    }
+
+    @Override
+    public Optional<Boolean> isOrderCancelled(Long orderId, Integer userId) {
+        return orderRepo.isOrderCancelled(orderId, userId);
+    }
+
 
     // Helper methods
     private Province getOrSaveProvince(Province province) {

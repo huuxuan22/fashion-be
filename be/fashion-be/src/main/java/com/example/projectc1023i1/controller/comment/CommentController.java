@@ -77,4 +77,5 @@ public class CommentController {
         logger.info("User {} is typing: {}", typingEvent.getUserId(), typingEvent.getIsTyping());
         return typingEvent;
     }
+
 }

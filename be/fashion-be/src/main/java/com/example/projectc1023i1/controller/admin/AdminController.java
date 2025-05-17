@@ -3,6 +3,7 @@ package com.example.projectc1023i1.controller.admin;
 import com.example.projectc1023i1.Dto.CouponDTO;
 import com.example.projectc1023i1.Dto.DealDTO;
 import com.example.projectc1023i1.Dto.EmployeeDTO;
+import com.example.projectc1023i1.Dto.get_data.order_maptruck.OrderMaptruck;
 import com.example.projectc1023i1.Exception.DataNotFoundException;
 import com.example.projectc1023i1.Exception.UserExepion;
 import com.example.projectc1023i1.model.*;
@@ -10,9 +11,9 @@ import com.example.projectc1023i1.request.GetInforEmployeeUpdate;
 import com.example.projectc1023i1.request.UploadImageEmployee;
 import com.example.projectc1023i1.respone.UserRespone;
 import com.example.projectc1023i1.respone.errorsValidate.EmployeeErrorsRespone;
+import com.example.projectc1023i1.service.OrderService;
 import com.example.projectc1023i1.service.impl.*;
 import jakarta.validation.Valid;
-import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -56,6 +58,8 @@ public class AdminController {
 
     @Autowired
     private ICouponService couponService;
+    @Autowired
+    private IOrderService orderService;
 
     /**
      *
@@ -285,6 +289,41 @@ public class AdminController {
         return ResponseEntity.ok(couponService.countTotalCoupons());
     }
 
+    // lay tat ca order ma khac muon gui di
+    @GetMapping("/find-all-order")
+    public ResponseEntity<?> findAllOrder(@AuthenticationPrincipal Users users,
+                                          @RequestParam("size") Integer size,
+                                          @RequestParam("page") Integer page,
+                                          @RequestParam("category") String category) {
+        Pageable pageable =  PageRequest.of(page,size,Sort.by("orderDate").descending());
+        Page<OrderMaptruck> orders = orderService.findAllOrderAdmin(pageable,category);
+        return ResponseEntity.ok(orders);
+    }
+
+    @GetMapping("/count-all-order")
+    public ResponseEntity<?> countAllOrder(@AuthenticationPrincipal Users users,
+                                           @RequestParam("param") String param) {
+        return ResponseEntity.ok(orderService.countOrder(param));
+    }
+
+
+    @GetMapping("/complete-order")
+    public ResponseEntity<?> completeOrder(@AuthenticationPrincipal Users users,
+                                           @RequestParam("orderId") Integer orderId) {
+        orderService.completeOrder(Long.valueOf(orderId));
+        return ResponseEntity.ok("oke nha");
+    }
+
+    @GetMapping("/delivery-order")
+    public ResponseEntity<?> deliveryOrder(@AuthenticationPrincipal Users users,
+                                           @RequestParam("orderId") Integer orderId) {
+        Boolean check = orderService.isOrderCancelled(Long.valueOf(orderId),users.getUserId()).get();
+        if (check) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đơn hàng này đã được khách hàng hủy bạn không thể vận chuyển");
+        }
+        orderService.deliveryOrder(Long.valueOf(orderId));
+        return ResponseEntity.ok("oke nha");
+    }
 
 
 }

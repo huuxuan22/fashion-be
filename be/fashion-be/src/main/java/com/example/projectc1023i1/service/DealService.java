@@ -5,8 +5,9 @@ import com.example.projectc1023i1.Exception.IOException;
 import com.example.projectc1023i1.Exception.PayloadTooLargeException;
 import com.example.projectc1023i1.Exception.UnsuportedMediaTypeException;
 import com.example.projectc1023i1.model.Deal;
-import com.example.projectc1023i1.model.Product;
+import com.example.projectc1023i1.model.Notifcation;
 import com.example.projectc1023i1.repository.impl.IDealRepo;
+import com.example.projectc1023i1.repository.impl.INotificationRepo;
 import com.example.projectc1023i1.repository.impl.IProductRepo;
 import com.example.projectc1023i1.service.impl.IDealService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +23,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -35,7 +37,8 @@ public class DealService implements IDealService {
     private ProductService productService;
     @Autowired
     private IProductRepo productRepo;
-
+    @Autowired
+    private INotificationRepo notificationRepo;
     @Override
     @Transactional
     @Modifying
@@ -54,6 +57,7 @@ public class DealService implements IDealService {
             }
         }
         List<Deal> dealList = new ArrayList<>();
+        List<Notifcation> notifcationList = new ArrayList<>();
         for (Integer product : dealDTO.getProduct()) {
             Deal deal = Deal.builder()
                     .dealPrice(dealDTO.getDealPrice())
@@ -65,9 +69,18 @@ public class DealService implements IDealService {
                     .dealStatus("CREATE")
                     .imageUrl(filename)
                     .build();
+
+            Notifcation notifcation = Notifcation.builder()
+                    .deal(deal)
+                    .message("DEAL NEW")
+                    .status(false)
+                    .createAt(LocalDateTime.now())
+                    .build();
+            notifcationList.add(notifcation);
             dealList.add(deal);
         }
         dealRepo.saveAll(dealList);
+        notificationRepo.saveAll(notifcationList);
     }
 
     @Override

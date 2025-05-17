@@ -5,8 +5,11 @@ import com.example.projectc1023i1.Exception.IOException;
 import com.example.projectc1023i1.Exception.PayloadTooLargeException;
 import com.example.projectc1023i1.Exception.UnsuportedMediaTypeException;
 import com.example.projectc1023i1.model.Coupon;
+import com.example.projectc1023i1.model.Notifcation;
 import com.example.projectc1023i1.repository.impl.ICouponRepo;
+import com.example.projectc1023i1.repository.impl.INotificationRepo;
 import com.example.projectc1023i1.service.impl.ICouponService;
+import com.example.projectc1023i1.service.impl.INotificationService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.UUID;
 
@@ -25,6 +29,9 @@ import java.util.UUID;
 public class CouponService implements ICouponService {
     @Autowired
     private ICouponRepo couponRepo;
+
+    @Autowired
+    private INotificationRepo notificationRepo;
 
     @Override
     public void createCoupon(CouponDTO couponDTO) throws java.io.IOException {
@@ -52,7 +59,15 @@ public class CouponService implements ICouponService {
                 .discountValue(couponDTO.getDiscountValue())
                 .usageLimit(couponDTO.getUsageLimit())
                 .build();
+        Notifcation notifcation = Notifcation.builder()
+                .createAt(LocalDateTime.now())
+                .message("COUPON NEW")
+                .status(false)
+                .coupon(coupon)
+                .build();
         couponRepo.save(coupon);
+        notificationRepo.save(notifcation);
+
     }
 
     @Override

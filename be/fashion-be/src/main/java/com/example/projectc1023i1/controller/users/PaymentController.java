@@ -1,11 +1,11 @@
-package com.example.projectc1023i1.controller.category;
+package com.example.projectc1023i1.controller.users;
 
 import com.example.projectc1023i1.Dto.PaymentDTO;
 import com.example.projectc1023i1.Dto.TransactionStatusDTO;
 import com.example.projectc1023i1.config.PaymentConfig;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
+import com.example.projectc1023i1.model.Users;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -21,7 +21,9 @@ import java.util.*;
 @RequestMapping("/api/payment")
 public class PaymentController {
     @GetMapping("/create-payment")
-    public ResponseEntity<?> createPayment() throws UnsupportedEncodingException {
+    public String createPayment(@AuthenticationPrincipal Users users,
+                                           @RequestParam("money") Double money,
+                                           @RequestParam("orderInf") String orderInf) throws UnsupportedEncodingException {
         String vnp_TxnRef = PaymentConfig.getRandomNumber(8);
 
         String vnp_TmnCode = PaymentConfig.vnp_TmnCode;
@@ -30,11 +32,11 @@ public class PaymentController {
         vnp_Params.put("vnp_Version", PaymentConfig.vnp_Version);
         vnp_Params.put("vnp_Command", PaymentConfig.vnp_Command);
         vnp_Params.put("vnp_TmnCode", vnp_TmnCode);
-        vnp_Params.put("vnp_Amount", String.valueOf(100000*100 ));
+        vnp_Params.put("vnp_Amount", String.valueOf((long)(money * 100)));
         vnp_Params.put("vnp_CurrCode", "VND");
         vnp_Params.put("vnp_BankCode", "NCB");
         vnp_Params.put("vnp_TxnRef", vnp_TxnRef);
-        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + vnp_TxnRef);
+        vnp_Params.put("vnp_OrderInfo", "Thanh toan don hang:" + orderInf);
         vnp_Params.put("vnp_Locale", "vn");
         vnp_Params.put("vnp_OrderType", "billpayment");
         vnp_Params.put("vnp_ReturnUrl", (PaymentConfig.vnp_ReturnUrl));
@@ -80,13 +82,7 @@ public class PaymentController {
         System.out.println("Hash data: " + hashData.toString());
         System.out.println("Query URL: " + queryUrl);
         System.out.println("Final payment URL: " + paymentUrl);
-
-        PaymentDTO paymentDTO = PaymentDTO.builder()
-                .URL(paymentUrl)
-                .message("Thanh cong")
-                .status("OK")
-                .build();
-        return ResponseEntity.ok(paymentDTO);
+        return PaymentConfig.vnp_PayUrl + "?" + queryUrl;
 
     }
     @GetMapping("/payment_info")

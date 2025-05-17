@@ -17,6 +17,8 @@ public interface IFeedbackMapper {
     UserSimpleDTO toUserSimpleDTO(Users user);
     ProductSmpleDTO toProductSimpleDTO(Product product);
     FeedbackMediaDTO toFeedbackMediaDTO(FeedbackMedia feedbackMedia);
+
+
     default Page<FeedbackDTO> toFeedbackDTOPage(Page<Feedback> feedbackPage) {
         return feedbackPage.map(this::toFeedbackDTO);
     }

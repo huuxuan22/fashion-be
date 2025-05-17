@@ -5,15 +5,14 @@ import com.example.projectc1023i1.Dto.AddressUserDTO;
 import com.example.projectc1023i1.Dto.CollectionDTO;
 import com.example.projectc1023i1.Dto.UserDTO;
 import com.example.projectc1023i1.Dto.UserUpdateDTO;
+import com.example.projectc1023i1.Dto.get_data.notification_maptruck.NotificationMaptruck;
+import com.example.projectc1023i1.Dto.get_data.order_maptruck.OrderMaptruck;
 import com.example.projectc1023i1.Exception.UserExepion;
 import com.example.projectc1023i1.component.JwtTokenUtils;
 import com.example.projectc1023i1.model.*;
 import com.example.projectc1023i1.request.UpdateUserRequest;
 import com.example.projectc1023i1.respone.ApiRespone;
-import com.example.projectc1023i1.service.DealService;
-import com.example.projectc1023i1.service.ProductService;
-import com.example.projectc1023i1.service.UserService;
-import com.example.projectc1023i1.service.VerificationService;
+import com.example.projectc1023i1.service.*;
 import com.example.projectc1023i1.service.impl.*;
 import lombok.Getter;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -66,6 +65,11 @@ public class UserController {
 
     @Autowired
     private JwtTokenUtils tokenUtils;
+
+    @Autowired
+    private INotificationService notificationService;
+    @Autowired
+    private OrderService orderService;
 
     @GetMapping("/profile")
     public ResponseEntity<Users> getUserProfileHandler (@AuthenticationPrincipal Users user) throws UserExepion {
@@ -250,5 +254,54 @@ public class UserController {
 //        Deal;
         couponService.decreaseOneCouponQuality(coupon);
         return  ResponseEntity.ok("oke nha");
+    }
+
+    @GetMapping("/get-all-notification")
+    public ResponseEntity<?> getAllNotification(@AuthenticationPrincipal Users users,
+                                                @RequestParam("size") Integer size,
+                                                @RequestParam("page") Integer page) {
+
+        Pageable pageable = PageRequest.of(page, size,Sort.by("createAt").descending());
+        Page<NotificationMaptruck> notificationMaptrucks = notificationService.findAll(pageable,users.getUserId());
+        return  ResponseEntity.ok(notificationMaptrucks);
+    }
+
+    @GetMapping("/get-all-new-notification")
+    public ResponseEntity<?> getAllNotification(@AuthenticationPrincipal Users users
+                                                ) {
+
+        List<NotificationMaptruck> notificationMaptrucks = notificationService.findAllNotificationNew(users.getUserId());
+        return  ResponseEntity.ok(notificationMaptrucks);
+    }
+
+    @GetMapping("/update-notification")
+    public ResponseEntity<?> update(@AuthenticationPrincipal Users users) {
+        notificationService.updateNotification();
+        return ResponseEntity.ok("oke nha");
+    }
+
+    @GetMapping("/get-all-order")
+    public ResponseEntity<?> getAllOrder(@AuthenticationPrincipal Users users,
+                                         @RequestParam("size") Integer size,
+                                         @RequestParam("page") Integer page) {
+        Pageable pageable = PageRequest.of(page, size,Sort.by("orderDate").descending());
+        Page<OrderMaptruck> orderMaptrucks = orderService.findAllOrderUser(pageable,users.getUserId());
+        return ResponseEntity.ok(orderMaptrucks);
+    }
+
+    @GetMapping("/count-all-order")
+    public ResponseEntity<?> getAllPageOfOrderUser(@AuthenticationPrincipal Users users) {
+        return ResponseEntity.ok(orderService.countOrderALLUser(users.getUserId()));
+    }
+
+    @PostMapping("/cancel-order")
+    public ResponseEntity<?> cancelOrder(@AuthenticationPrincipal Users users,
+                                         @RequestParam("orderId") Integer orderId) {
+        Boolean check = orderService.existsByOrderIdAndUser(Long.valueOf(orderId),users.getUserId());
+        if (check) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Đơn hàng của bạn đã được đặt bạn không thể hủy ");
+        }
+        orderService.cancelOrder(users.getUserId(), Long.valueOf(orderId));
+        return ResponseEntity.ok("oke nha");
     }
 }
