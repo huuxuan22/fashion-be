@@ -1,5 +1,6 @@
 package com.example.projectc1023i1.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -21,6 +22,7 @@ public class ProductCollection {
 
     @ManyToOne
     @JoinColumn(name = "collection_id")
+    @JsonBackReference
     private Collection collection;
 
 }

@@ -132,4 +132,19 @@ public interface IProductRepo extends JpaRepository<Product, Integer> {
             @Param("sizeId") Integer sizeId,
             @Param("categoryId") Integer categoryId,
             @Param("subCategoryId") Integer subCategoryId);
+
+    @Query("select ps from Product as ps \n" +
+            "where ps.productId in (\n" +
+            "select distinct p.productId from Product as p \n" +
+            "inner join ProductVariant as pv on pv.product.productId = p.productId\n" +
+            "inner join OrderDetails as od on od.productVariant.productVariantId = pv.productVariantId \n" +
+            "inner join Order as o on o.orderId  = od.order.orderId\n" +
+            "where o.status = 'COMPLETE'\n" +
+            "group by pv.product.productId    \n" +
+            "order by count(p.productId) desc \n" +
+            ")")
+    Page<Product> productBanChay(Pageable pageable);
+
+    @Query("select p from Product p where  p.quality < 20 ")
+    Page<Product> getProductOutStock(Pageable pageable);
 }

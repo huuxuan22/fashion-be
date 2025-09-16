@@ -15,4 +15,5 @@ public class TypingEvent {
     private String userId;
     private Boolean isTyping;
     private String productId;
+
 }

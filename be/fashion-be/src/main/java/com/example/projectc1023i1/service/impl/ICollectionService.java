@@ -17,4 +17,9 @@ public interface ICollectionService {
     List<CollectionMaptruck> findAll();
     CollectionMaptruck findLastCollection();
     CollectionMaptruck findByLast();
+    Page<Collection> findByIsActive(Pageable pageable,String search);
+    Integer totalPage(String search);
+    void cancelCollection (Collection collection);
+    void restoreCollection(Collection collection);
+    void addProductToCollection(Integer collectionId, List<Integer> productId);
 }

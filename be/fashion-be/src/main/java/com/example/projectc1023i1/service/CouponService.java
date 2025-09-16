@@ -81,6 +81,16 @@ public class CouponService implements ICouponService {
     }
 
     @Override
+    public void cancelCoupon(Coupon coupon) {
+        if (coupon.getCouponStatus().equals("Cancel")) {
+            coupon.setCouponStatus("Active");
+        }else {
+            coupon.setCouponStatus("Cancel");
+        }
+        couponRepo.save(coupon);
+    }
+
+    @Override
     public Integer countTotalCoupons() {
         return couponRepo.countCoupon() % 5 == 0 ? couponRepo.countCoupon() / 5 : couponRepo.countCoupon() / 5 + 1;
     }

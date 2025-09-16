@@ -188,6 +188,34 @@ public class OrderService implements IOrderService {
         return orderRepo.isOrderCancelled(orderId, userId);
     }
 
+    @Override
+    public Page<OrderMaptruck> findAllOrderAdmin(Pageable pageable) {
+        Page<Order> orders = orderRepo.findAllOrderAdmin(pageable);
+        return orderMapper.toFeedbackDTOPage(orders);
+    }
+
+    @Override
+    public Page<OrderMaptruck> findAllOrderCompleteUser(Pageable pageable, String searchTerm, LocalDateTime startDate, LocalDateTime endDate,String paymentMethod) {
+        Page<OrderMaptruck> orderMaptrucks = null;
+        if (paymentMethod.equals("all")) {
+            paymentMethod = "";
+        }
+        if (endDate == null && startDate == null) {
+            orderMaptrucks = orderMapper.toFeedbackDTOPage(orderRepo.findAllOrderAdminByCOMPLETE0(pageable, searchTerm, paymentMethod));
+        } else if (endDate == null || startDate == null) {
+            orderMaptrucks = orderMapper.toFeedbackDTOPage(orderRepo.findAllOrderAdminByCOMPLETE1(pageable, searchTerm, startDate, paymentMethod));
+        } else {
+            orderMaptrucks = orderMapper.toFeedbackDTOPage(orderRepo.findAllOrderAdminByCOMPLETE2(pageable, searchTerm, startDate, endDate, paymentMethod));
+        }
+        return orderMaptrucks;
+    }
+
+    @Override
+    public Integer getOrdersCompleteAdmin(String searchTerm, LocalDateTime startDate, LocalDateTime endDate,String paymentMethod) {
+        return orderRepo.countOrderAdminByCOMPLETE(searchTerm,startDate,endDate,paymentMethod) %10 == 0 ?
+                orderRepo.countOrderAdminByCOMPLETE(searchTerm,startDate,endDate,paymentMethod)/10 : orderRepo.countOrderAdminByCOMPLETE(searchTerm,startDate,endDate,paymentMethod) /10 + 1;
+    }
+
 
     // Helper methods
     private Province getOrSaveProvince(Province province) {

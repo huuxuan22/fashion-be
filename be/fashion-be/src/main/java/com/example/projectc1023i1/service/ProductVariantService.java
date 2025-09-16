@@ -1,5 +1,6 @@
 package com.example.projectc1023i1.service;
 
+import com.example.projectc1023i1.Dto.AddQualityProduct;
 import com.example.projectc1023i1.Dto.ProductMorphology;
 import com.example.projectc1023i1.Dto.ProductVariantDTO;
 import com.example.projectc1023i1.Dto.get_data.CountByQualitySize;
@@ -123,5 +124,34 @@ public class ProductVariantService implements IProductVariantService {
     @Override
     public List<CountByQualitySize> countQuanlityWithSizeByColorId(Integer productId, Integer colorId) {
         return productVariantRepo.countQuanlityWithSizeByColorId(productId,colorId);
+    }
+
+    @Override
+    public void addQuality(List<AddQualityProduct> addQualityProducts, Integer productId) {
+        for (AddQualityProduct addQualityProduct : addQualityProducts) {
+            Product product = productRepo.findById(productId).get();
+            ProductVariant productVariant = productVariantRepo.findQuanlityByProductIdAndSizeIdAndColorId(productId,addQualityProduct.getSizeId(),addQualityProduct.getColorId());
+            if (productVariant == null) {
+                ProductVariant productVariantNew = ProductVariant.builder()
+                        .color(colorRepo.findById(addQualityProduct.getColorId()).get())
+                        .size(sizeRepo.findById(addQualityProduct.getSizeId()).get())
+                        .product(product)
+                        .stock(addQualityProduct.getQuantity())
+                        .price(Double.valueOf(product.getPrice()))
+                        .sku(productUtils.getSkuFromProductDTO(
+                                addQualityProduct.getColorId(),
+                                addQualityProduct.getSizeId()
+                        ) + "00"+addQualityProduct.getQuantity())
+                        .build();
+                productVariantRepo.save(productVariantNew);
+                product.setQuality(product.getQuality() + addQualityProduct.getQuantity());
+                productRepo.save(product);
+            }else {
+                productVariant.setStock(productVariant.getStock()+addQualityProduct.getQuantity());
+                product.setQuality(product.getQuality()+addQualityProduct.getQuantity());
+                productRepo.save(product);
+                productVariantRepo.save(productVariant);
+            }
+        }
     }
 }

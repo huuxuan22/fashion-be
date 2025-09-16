@@ -9,6 +9,7 @@ import com.example.projectc1023i1.model.Collection;
 import com.example.projectc1023i1.model.Product;
 import com.example.projectc1023i1.model.ProductCollection;
 import com.example.projectc1023i1.repository.impl.ICollectionRepo;
+import com.example.projectc1023i1.repository.impl.IProductRepo;
 import com.example.projectc1023i1.service.impl.ICollectionService;
 import com.example.projectc1023i1.service.mapper.ICollectionMastruck;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,11 @@ public class CollectionService implements ICollectionService {
 
     @Autowired
     private ICollectionMastruck collectionMastruck;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private IProductRepo productRepo;
+
     @Override
     public void save(CollectionDTO collectionDTO) throws java.io.IOException {
         String filename = "";
@@ -100,6 +106,42 @@ public class CollectionService implements ICollectionService {
     @Override
     public CollectionMaptruck findByLast() {
          return collectionMastruck.converToCollectionMaptruck(collectionRepo.findByLast());
+    }
+
+    @Override
+    public Page<Collection> findByIsActive(Pageable pageable,String search) {
+        return collectionRepo.findByIsActive(pageable,search);
+    }
+
+    @Override
+    public Integer totalPage(String search) {
+        return collectionRepo.countAll(search) % 8 == 0 ? collectionRepo.countAll(search)/8 : collectionRepo.countAll(search)/8 +1;
+    }
+
+    @Override
+    public void cancelCollection(Collection collection) {
+        collection.setIsActive(false);
+        collectionRepo.save(collection);
+    }
+
+    @Override
+    public void restoreCollection(Collection collection) {
+        collection.setIsActive(true);
+        collectionRepo.save(collection);
+    }
+
+    @Override
+    public void addProductToCollection(Integer collectionId, List<Integer> productId) {
+        Collection collection = collectionRepo.findById(Long.valueOf(collectionId)).get();
+        List<ProductCollection> productCollectionList = new ArrayList<>();
+        for (int i = collection.getProductCollections().size(); i < productId.size(); i++) {
+            productCollectionList.add(ProductCollection.builder()
+                            .collection(collection)
+                            .product(productRepo.findById(productId.get(i)).get())
+                    .build());
+        }
+        collection.setProductCollections(productCollectionList);
+        collectionRepo.save(collection);
     }
 
     public String storeFile(MultipartFile file) throws IOException, java.io.IOException {

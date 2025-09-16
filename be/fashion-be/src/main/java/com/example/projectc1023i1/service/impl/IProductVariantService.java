@@ -1,5 +1,6 @@
 package com.example.projectc1023i1.service.impl;
 
+import com.example.projectc1023i1.Dto.AddQualityProduct;
 import com.example.projectc1023i1.Dto.ProductMorphology;
 import com.example.projectc1023i1.Dto.ProductVariantDTO;
 import com.example.projectc1023i1.Dto.get_data.CountByQualitySize;
@@ -23,4 +24,5 @@ public interface IProductVariantService {
     Page<ProductVariant> findByProductId(Integer productId, Pageable pageable);
     Integer getSoldOfProduct(Integer productId);
     List<CountByQualitySize> countQuanlityWithSizeByColorId(Integer productId, Integer colorId);
+    void addQuality(List<AddQualityProduct> addQualityProducts, Integer productId);
 }

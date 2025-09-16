@@ -18,6 +18,5 @@ public class CategoryMapper {
     private String categoriesName;
     private String description;
     private String thumbnail;
-    private List<SubCategoryMapper
-            > categories;
+    private List<SubCategoryMapper> categories;
 }

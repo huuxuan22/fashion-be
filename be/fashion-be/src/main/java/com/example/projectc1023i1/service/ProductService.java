@@ -252,4 +252,14 @@ public class ProductService implements IProductService {
         return productRepo.getAllTotal(colorId, sizeId, categoryId, subCategoryId) % 8 == 0 ?
                 productRepo.getAllTotal(colorId, sizeId, categoryId, subCategoryId) / 8 : productRepo.getAllTotal(colorId, sizeId, categoryId, subCategoryId) /8 + 1;
     }
+
+    @Override
+    public Page<Product> productBanChay(Pageable pageable) {
+        return productRepo.productBanChay(pageable);
+    }
+
+    @Override
+    public Page<Product> getProductOutStock(Pageable pageable) {
+        return productRepo.getProductOutStock(pageable);
+    }
 }

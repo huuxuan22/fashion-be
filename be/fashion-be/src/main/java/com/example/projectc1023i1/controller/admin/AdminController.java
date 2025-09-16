@@ -1,5 +1,6 @@
 package com.example.projectc1023i1.controller.admin;
 
+import com.example.projectc1023i1.Dto.AddQualityProduct;
 import com.example.projectc1023i1.Dto.CouponDTO;
 import com.example.projectc1023i1.Dto.DealDTO;
 import com.example.projectc1023i1.Dto.EmployeeDTO;
@@ -7,11 +8,15 @@ import com.example.projectc1023i1.Dto.get_data.order_maptruck.OrderMaptruck;
 import com.example.projectc1023i1.Exception.DataNotFoundException;
 import com.example.projectc1023i1.Exception.UserExepion;
 import com.example.projectc1023i1.model.*;
+import com.example.projectc1023i1.request.AddProductToCollection;
 import com.example.projectc1023i1.request.GetInforEmployeeUpdate;
 import com.example.projectc1023i1.request.UploadImageEmployee;
 import com.example.projectc1023i1.respone.UserRespone;
 import com.example.projectc1023i1.respone.errorsValidate.EmployeeErrorsRespone;
+import com.example.projectc1023i1.service.CollectionService;
 import com.example.projectc1023i1.service.OrderService;
+import com.example.projectc1023i1.service.ProductService;
+import com.example.projectc1023i1.service.ProductVariantService;
 import com.example.projectc1023i1.service.impl.*;
 import jakarta.validation.Valid;
 import org.slf4j.Logger;
@@ -21,6 +26,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -32,6 +38,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -60,6 +67,12 @@ public class AdminController {
     private ICouponService couponService;
     @Autowired
     private IOrderService orderService;
+    @Autowired
+    private CollectionService collectionService;
+    @Autowired
+    private ProductService productService;
+    @Autowired
+    private ProductVariantService productVariantService;
 
     /**
      *
@@ -314,6 +327,12 @@ public class AdminController {
         return ResponseEntity.ok("oke nha");
     }
 
+    /**
+     * cap nhat trang thai cua don hang
+     * @param users
+     * @param orderId
+     * @return
+     */
     @GetMapping("/delivery-order")
     public ResponseEntity<?> deliveryOrder(@AuthenticationPrincipal Users users,
                                            @RequestParam("orderId") Integer orderId) {
@@ -325,5 +344,141 @@ public class AdminController {
         return ResponseEntity.ok("oke nha");
     }
 
+    /**
+     * Lay tat ca don hang da hoan thanh
+     * @param users
+     * @param page
+     * @param size
+     * @param search
+     * @param startDate
+     * @param endDate
+     * @param paymentMethod
+     * @return
+     */
+    @GetMapping("/order/complete")
+    public ResponseEntity<?> getOrderComplete(@AuthenticationPrincipal Users users,
+                                              @RequestParam( name = "page",defaultValue = "0") Integer page,
+                                              @RequestParam( name = "size",defaultValue = "10") Integer size,
+                                              @RequestParam(name = "search",defaultValue = "") String search,
+                                              @RequestParam(required = false)  @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+                                              @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  LocalDateTime endDate,
+                                              @RequestParam(required = false) String paymentMethod) {
+        Pageable pageable = PageRequest.of(page, size, Sort.by("orderId").descending());
+        Page<OrderMaptruck> orders = orderService.findAllOrderCompleteUser(pageable, search, startDate, endDate, paymentMethod);
+        return ResponseEntity.ok(orders);
+    }
 
+    @GetMapping("/order/complete/total-page")
+    public ResponseEntity<?> getAllTotalPage(@AuthenticationPrincipal Users users,
+                                             @RequestParam("search") String search,
+                                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  LocalDateTime startDate,
+                                             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)  LocalDateTime endDate,
+                                             @RequestParam("paymentMethod") String paymentMethod) {
+        return ResponseEntity.ok(orderService.getOrdersCompleteAdmin(search,startDate,endDate,paymentMethod));
+    }
+
+    @PostMapping("/cancel-coupon")
+    public ResponseEntity<?> cancelCoupon (@RequestBody Coupon coupon) {
+        couponService.cancelCoupon(coupon);
+        return ResponseEntity.ok("ok");
+    }
+
+    /**
+     * danh sach collection
+     * @param size
+     * @param page
+     * @param search
+     * @return
+     */
+    @GetMapping("/collection-list")
+    public ResponseEntity<?> getAllCollectionList(@RequestParam("size") Integer size,
+                                                  @RequestParam("page") Integer page,
+                                                  @RequestParam("search") String search) {
+        Pageable pageable =  PageRequest.of(page,size);
+        Page<Collection> collectionPage = collectionService.findByIsActive(pageable,search);
+        return ResponseEntity.ok(collectionPage);
+    }
+
+    /**
+     * tong so trang cua 1 collection
+     * @param search
+     * @return
+     */
+    @GetMapping("/collection-total")
+    public ResponseEntity<?> totalPage(@RequestParam("search") String search) {
+        Integer page = collectionService.totalPage(search);
+        return ResponseEntity.ok(page);
+    }
+
+    /**
+     * huy 1 bo suu tap
+     * @param collection
+     * @return
+     */
+    @PostMapping("/cancel-collection")
+    public ResponseEntity<?> cancelCollection(@RequestBody Collection collection) {
+        collectionService.cancelCollection(collection);
+        return ResponseEntity.ok("ok");
+    }
+
+
+    /**
+     * khoi phuc 1 bo suu tap
+     * @param collection
+     * @return
+     */
+    @PostMapping("/restore-collection")
+    public ResponseEntity<?> restoreCollection(@RequestBody Collection collection) {
+        collectionService.restoreCollection(collection);
+        return ResponseEntity.ok("ok");
+    }
+
+    /**
+     * them san pham vao bo suu tap
+     * @return
+     */
+
+    @PostMapping("/add-product-to-collection")
+    public ResponseEntity<?> addProductToCollection(@RequestBody AddProductToCollection addProductToCollection) {
+        collectionService.addProductToCollection(addProductToCollection.getCollectionId(),addProductToCollection.getProductIds());
+        return ResponseEntity.ok("ok");
+    }
+
+    /**
+     * san pham ban chay
+     * @return
+     */
+
+    @GetMapping("/best-selling")
+    public ResponseEntity<?> bestSelling(@RequestParam("size") Integer size,
+                                         @RequestParam("page") Integer page) {
+        Pageable pageable =  PageRequest.of(page,size);
+        Page<Product> productSelling = productService.productBanChay(pageable);
+        return ResponseEntity.ok(productSelling);
+    }
+
+    /**
+     * san pham gan het hang
+     * @return
+     */
+
+    @GetMapping("/out-of-stock")
+    public ResponseEntity<?> outOfStock(@RequestParam("size") Integer size,
+                                         @RequestParam("page") Integer page) {
+        Pageable pageable =  PageRequest.of(page,size);
+        Page<Product> productSelling = productService.getProductOutStock(pageable);
+        return ResponseEntity.ok(productSelling);
+    }
+
+    /**
+     * them so luong cho san pham
+     * @return
+     */
+
+    @PostMapping("/add-quality")
+    public ResponseEntity<?> addQuality(@RequestParam("productId") Integer productId,
+                                        @RequestBody List<AddQualityProduct> list) {
+        productVariantService.addQuality(list,productId);
+        return ResponseEntity.ok("productSelling");
+    }
 }

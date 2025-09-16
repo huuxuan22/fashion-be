@@ -1,7 +1,6 @@
 package com.example.projectc1023i1.Validation.employee;
 
 import com.example.projectc1023i1.repository.impl.IUserRepository;
-import com.example.projectc1023i1.service.impl.IUserService;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,8 @@ public class ExistNumberPhoneValidator implements ConstraintValidator<ExistNumbe
         if (!exists) {
             return true;
         }
-        return false;  // Nếu tồn tại, trả về false (không hợp lệ), nếu không tồn tại, trả về true (hợp lệ)
+        return false;
+        // Nếu tồn tại, trả về false (không hợp lệ), nếu không tồn tại, trả về true (hợp
+        // lệ)
     }
 }
-

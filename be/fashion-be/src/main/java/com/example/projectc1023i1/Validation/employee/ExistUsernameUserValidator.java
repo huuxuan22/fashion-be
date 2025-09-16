@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
+
 @Valid
 public class ExistUsernameUserValidator implements ConstraintValidator<ExistUsernameUser, String> {
     @Autowired
@@ -18,7 +19,7 @@ public class ExistUsernameUserValidator implements ConstraintValidator<ExistUser
     @Override
     public boolean isValid(String username, ConstraintValidatorContext context) {
         if (username == null || username.isEmpty()) {
-            return true;  // Chấp nhận giá trị trống nếu không yêu cầu
+            return true; // Chấp nhận giá trị trống nếu không yêu cầu
         }
         if (!userRepository.existsByUsername(username)) {
             return true;

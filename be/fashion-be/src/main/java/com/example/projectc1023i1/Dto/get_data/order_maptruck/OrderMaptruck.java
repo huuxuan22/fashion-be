@@ -23,6 +23,5 @@ public class OrderMaptruck {
     private String note;
     private Users users;
     private String address;
-
     private List<OrderDetailMaptruck> orderDetailsList;
 }

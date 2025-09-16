@@ -48,21 +48,16 @@ public class WebSercurityConfig {
 
                 .csrf(AbstractHttpConfigurer:: disable)
                 .addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class)
-                .authorizeHttpRequests((request)   -> {
-
-                        request.requestMatchers(
-                                        "/ws/**",
-                                        "**",
-                                        "/**")
-
-                                .permitAll()
-                            // phaan quyen cho user
-
-                            // phan quyen cho feedback
-
-                            .anyRequest().authenticated()
-                    ;
-                })
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers(
+                                "/v3/api-docs/**",
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/swagger-resources/**",   // thêm dòng này
+                                "/webjars/**"
+                        ).permitAll()
+                        .anyRequest().authenticated()
+                )
                 .csrf(AbstractHttpConfigurer::disable);
         http.cors(new Customizer<CorsConfigurer<HttpSecurity>>() {// dùng để tùy chỉnh cấu hình Cors
             /**

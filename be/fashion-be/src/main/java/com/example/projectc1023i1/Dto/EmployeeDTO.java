@@ -2,7 +2,6 @@ package com.example.projectc1023i1.Dto;
 
 import com.example.projectc1023i1.Validation.employee.ExistEmailUser;
 import com.example.projectc1023i1.Validation.employee.ExistNumberphoneUser;
-import com.example.projectc1023i1.model.CategoryEmployee;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;

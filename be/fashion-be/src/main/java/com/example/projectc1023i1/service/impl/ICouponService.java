@@ -12,6 +12,7 @@ public interface ICouponService {
     void createCoupon(CouponDTO couponDTO) throws IOException;
     Page<Coupon> getCoupons(Pageable pageable);
     void deleteCoupon(Long couponId);
+    void cancelCoupon(Coupon coupon);
     Integer countTotalCoupons();
     Coupon findByCouponCode( String param);
     void decreaseOneCouponQuality(Coupon coupon);

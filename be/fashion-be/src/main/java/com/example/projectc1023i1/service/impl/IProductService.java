@@ -43,4 +43,7 @@ public interface IProductService {
              Integer sizeId,
              Integer categoryId,
              Integer subCategoryId);
+    Page<Product> productBanChay(Pageable pageable);
+    Page<Product> getProductOutStock(Pageable pageable);
+
 }
